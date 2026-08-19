@@ -32,6 +32,7 @@ La numérotation indique la PRIORITÉ en cas de conflit :
 - `protocole-3-temps.md` → Évaluer → Activer → Ancrer (la méthode)
 - `respiration-coherente.md` → l'exercice clé entre les séances
 - `protocoles-maison.md` → les ressources d'autorégulation au quotidien
+- `capturer-ressentis.md` → noter questions/ressentis/doutes pour la synthèse kiné
 
 ### 03 — Les formations / l'expertise technique
 - `drainage-lymphatique.md` → la technique Vodder

@@ -29,6 +29,39 @@ Le kiné (Ophélie Blondel) a une **expertise** : le nerf vague, au croisement d
 - Le coach IA **reflète la méthode du kiné** (les vrais contenus de ses formations, pas du générique).
 - Le kiné a une **vue d'ensemble** : il sait qui avance, qui stagne, qui a besoin d'un coup de main.
 
+### 🎯 LE RÔLE DU COACH = RAPPELER LE CADRE (positionnement acté)
+
+**C'est du SOIN** et le coach ne conseille pas librement : il **rappelle le cadre et les principes**
+de la méthode ou de l'exercice utilisé par Ophélie.
+
+Le coach ré-explique, ré-ancre, guide la répétition — il **ne sort jamais du cadre posé par le kiné** :
+- rappel des exercices et de la respiration cohérente (comme en séance)
+- rappel des principes du protocole (Évaluer → Activer → Ancrer)
+- rappel des repères et ressources maison validées par Ophélie
+- s'il reçoit une question hors de ce cadre (symptôme, diagnostic, traitement) → redirection vers Ophélie / le médecin
+
+**Conséquence (positive)** : moins de risque (le coach reste dans la méthode du pro), plus de
+cohérence (il ancre ce que la kiné a déjà dit), zéro dérive en « mini-médecin ».
+
+### 📋 LE COACH CAPTE ET SYNTHÉTISE (la boucle avec la kiné)
+
+En plus de rappeler le cadre, le coach **note ce que le patient dit** (entre les séances) :
+- les **questions** qu'il pose (thèmes qui reviennent, incompréhensions)
+- ses **ressentis** (stress, sommeil, douleur, énergie — déclarés, jamais interprétés comme diagnostic)
+- ses **doutes** et hésitations (adhésion à la méthode, peurs)
+- son **engagement** (fréquence d'utilisation, exercices suivis, régularité)
+
+**Ce que cela produit** : une **synthèse de l'engagement hors cabinet** par patient, que la kiné
+consulte avant la prochaine séance.
+> Ex. : « Marc a utilisé l'app 6 fois cette semaine, surtout la respiration. Il a demandé 2 fois
+> si son anxiété allait diminuer, et a exprimé un doute sur la durée. »
+
+**Objectif** : la kiné arrive en séance en connaissant déjà les leviers et blocages du patient
+→ séance personnalisée, lien renforcé, et le patient se sent réellement accompagné.
+
+**Précision (garde-fou)** : ce sont des **déclarations du patient**, résumées fidèlement.
+Le coach ne les interprète jamais en diagnostic — il les transmet brutes et structurées.
+
 ---
 
 ## 3. L'APP COACH IA PATIENT (l'outil des patients)
