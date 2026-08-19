@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dixième Nerf · Ophélie Blondel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  background: #FAFAF7;
+  color: #1a1a18;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── VARIABLES ── */
+:root {
+  --teal-50:  #E1F5EE;
+  --teal-100: #9FE1CB;
+  --teal-400: #1D9E75;
+  --teal-600: #0F6E56;
+  --teal-800: #085041;
+  --teal-900: #04342C;
+  --stone: #FAFAF7;
+  --stone-100: #F0EFEA;
+  --stone-200: #E2E0D8;
+  --ink: #1a1a18;
+  --ink-light: #5a5a52;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+/* ── NAVIGATION ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(250,250,247,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--stone-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  height: 64px;
+}
+
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  cursor: pointer;
+}
+.nav-logo em { font-style: italic; color: var(--teal-400); }
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links li a {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--ink-light);
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.nav-links li a:hover,
+.nav-links li a.active { color: var(--teal-400); }
+
+.nav-cta {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--teal-800);
+  border: 0.5px solid var(--teal-400);
+  padding: 8px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s;
+  font-family: var(--sans);
+}
+.nav-cta:hover { background: var(--teal-800); color: var(--teal-50); }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; padding-top: 64px; min-height: 100vh; animation: fadeIn 0.4s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── HERO ── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 64px);
+}
+.hero-left {
+  padding: 5rem 4rem 4rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hero-tag {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--teal-400);
+  margin-bottom: 2rem;
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: 62px;
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+.hero-title em { font-style: italic; color: var(--teal-400); }
+.hero-sub {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink-light);
+  line-height: 1.8;
+  max-width: 380px;
+  margin-bottom: 3rem;
+}
+.hero-ctas { display: flex; gap: 1.5rem; align-items: center; }
+.btn-primary {
+  background: var(--teal-800);
+  color: var(--teal-50);
+  border: none;
+  padding: 14px 32px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--teal-900); }
+.btn-ghost {
+  font-size: 13px;
+  color: var(--ink-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.hero-right {
+  background: var(--teal-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(29,158,117,0.08) 0%, transparent 70%);
+}
+
+/* ── NERVE SVG ── */
+.nerve-wrap { position: relative; z-index: 1; }
+
+/* ── BAND ── */
+.band {
+  background: var(--stone-100);
+  border-top: 0.5px solid var(--stone-200);
+  border-bottom: 0.5px solid var(--stone-200);
+  padding: 1.25rem 5rem;
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.band-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-light);
+  letter-spacing: 0.04em;
+}
+.band-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal-400); flex-shrink: 0; }
+
+/* ── SECTIONS ── */
+.section { padding: 5rem 5rem; }
+.section-sm { padding: 3rem 5rem; }
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--teal-400);
+  margin-bottom: 0.75rem;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 3rem;
+}
+.section-title em { font-style: italic; }
+
+/* ── CARDS ── */
+.cards-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5px; background: var(--stone-200); border: 1.5px solid var(--stone-200); border-radius: 4px; overflow: hidden; }
+.card {
+  background: var(--stone);
+  padding: 2.5rem 2rem;
+}
+.card-num {
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 300;
+  color: var(--teal-100);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.card-title { font-size: 15px; font-weight: 400; margin-bottom: 0.6rem; }
+.card-desc { font-size: 13px; color: var(--ink-light); line-height: 1.75; }
+
+/* ── FORMATION CARDS ── */
+.formations-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--stone-200); border: 1px solid var(--stone-200); border-radius: 4px; overflow: hidden; }
+.f-card {
+  background: var(--stone);
+  padding: 2rem;
+  transition: background 0.2s;
+  cursor: default;
+}
+.f-card:hover { background: var(--teal-50); }
+.f-card-tag {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal-400);
+  margin-bottom: 0.75rem;
+}
+.f-card-title { font-family: var(--serif); font-size: 20px; font-weight: 400; margin-bottom: 0.5rem; }
+.f-card-desc { font-size: 13px; color: var(--ink-light); line-height: 1.7; margin-bottom: 1rem; }
+.f-card-link {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--teal-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── ABOUT ── */
+.about-grid { display: grid; grid-template-columns: 360px 1fr; gap: 5rem; align-items: center; }
+.about-portrait {
+  background: var(--teal-50);
+  border-radius: 2px;
+  height: 460px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.about-initials {
+  font-family: var(--serif);
+  font-size: 88px;
+  font-weight: 300;
+  color: var(--teal-400);
+  font-style: italic;
+  opacity: 0.6;
+}
+.about-portrait::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(transparent, rgba(225,245,238,0.6));
+}
+.about-title { font-family: var(--serif); font-size: 32px; font-weight: 300; line-height: 1.25; margin-bottom: 1.5rem; }
+.about-p { font-size: 14px; color: var(--ink-light); line-height: 1.85; margin-bottom: 1rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; }
+.tag {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border: 0.5px solid var(--teal-100);
+  border-radius: 20px;
+  color: var(--teal-800);
+  background: var(--teal-50);
+}
+
+/* ── HISTOIRE ── */
+.histoire-wrap { max-width: 680px; margin: 0 auto; padding: 5rem 2rem; }
+.h-eyebrow { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-400); margin-bottom: 2.5rem; }
+.h-main-title { font-family: var(--serif); font-size: 52px; font-weight: 300; line-height: 1.1; margin-bottom: 0.5rem; }
+.h-main-title em { font-style: italic; color: var(--teal-400); }
+.h-main-sub { font-family: var(--serif); font-size: 22px; font-style: italic; font-weight: 300; color: var(--ink-light); margin-bottom: 3rem; }
+.h-rule { width: 40px; height: 1px; background: var(--teal-100); margin-bottom: 3rem; }
+.h-chapter { margin-bottom: 3rem; }
+.h-chapter-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-400); margin-bottom: 0.5rem; }
+.h-chapter-title { font-family: var(--serif); font-size: 24px; font-weight: 400; margin-bottom: 1rem; }
+.h-p { font-size: 15px; font-weight: 300; line-height: 1.9; color: var(--ink); margin-bottom: 1rem; }
+.h-pull {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--teal-800);
+  border-left: 2px solid var(--teal-100);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  line-height: 1.5;
+}
+.h-sep { border: none; border-top: 0.5px solid var(--stone-200); margin: 3rem 0; }
+.h-tagline-box {
+  background: var(--teal-50);
+  border: 0.5px solid var(--teal-100);
+  border-radius: 4px;
+  padding: 2rem 2.5rem;
+  margin-top: 2.5rem;
+}
+.h-tagline { font-family: var(--serif); font-size: 28px; font-style: italic; font-weight: 300; color: var(--teal-800); margin-bottom: 0.5rem; line-height: 1.4; }
+.h-tagline-sub { font-size: 12px; letter-spacing: 0.1em; color: var(--teal-600); }
+
+/* ── SOINS PAGE ── */
+.soin-hero { padding: 5rem 5rem 3rem; border-bottom: 0.5px solid var(--stone-200); }
+.soin-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.soin-title { font-family: var(--serif); font-size: 48px; font-weight: 300; line-height: 1.1; margin-bottom: 1.5rem; }
+.soin-title em { font-style: italic; color: var(--teal-400); }
+.soin-desc { font-size: 14px; color: var(--ink-light); line-height: 1.85; }
+.soin-visual {
+  background: var(--teal-50);
+  border-radius: 4px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.soin-stat { border-top: 0.5px solid var(--teal-100); padding-top: 1rem; }
+.soin-stat-num { font-family: var(--serif); font-size: 36px; font-weight: 300; color: var(--teal-400); line-height: 1; margin-bottom: 0.25rem; }
+.soin-stat-label { font-size: 12px; color: var(--teal-600); letter-spacing: 0.06em; }
+
+.protocole { padding: 4rem 5rem; }
+.protocole-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 3rem; }
+.step { }
+.step-num { font-family: var(--serif); font-size: 56px; font-weight: 300; color: var(--teal-100); line-height: 1; margin-bottom: 1rem; }
+.step-title { font-size: 16px; font-weight: 400; margin-bottom: 0.5rem; }
+.step-desc { font-size: 13px; color: var(--ink-light); line-height: 1.75; }
+.step-techniques { margin-top: 1rem; display: flex; flex-direction: column; gap: 4px; }
+.step-tech { font-size: 12px; color: var(--teal-600); padding: 3px 0; border-top: 0.5px solid var(--stone-200); }
+
+.indications { background: var(--stone-100); padding: 4rem 5rem; }
+.indic-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.indic-pill {
+  background: var(--stone);
+  border: 0.5px solid var(--stone-200);
+  border-radius: 2px;
+  padding: 1rem 1.25rem;
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.indic-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal-400); flex-shrink: 0; }
+
+/* ── CONTACT ── */
+.contact-wrap { max-width: 560px; margin: 0 auto; padding: 6rem 2rem; }
+.contact-title { font-family: var(--serif); font-size: 44px; font-weight: 300; margin-bottom: 0.5rem; }
+.contact-title em { font-style: italic; color: var(--teal-400); }
+.contact-sub { font-size: 14px; color: var(--ink-light); line-height: 1.8; margin-bottom: 3rem; }
+.form-group { margin-bottom: 1.5rem; }
+.form-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); display: block; margin-bottom: 0.5rem; }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--stone-200);
+  padding: 0.6rem 0;
+  font-size: 14px;
+  font-family: var(--sans);
+  font-weight: 300;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--teal-400); }
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-select { cursor: pointer; }
+.form-submit {
+  width: 100%;
+  background: var(--teal-800);
+  color: var(--teal-50);
+  border: none;
+  padding: 16px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+.form-submit:hover { background: var(--teal-900); }
+.contact-aside { margin-top: 3rem; padding-top: 2rem; border-top: 0.5px solid var(--stone-200); display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.aside-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.4rem; }
+.aside-value { font-size: 14px; color: var(--ink); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 0.5px solid var(--stone-200);
+  padding: 2rem 5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo { font-family: var(--serif); font-size: 16px; font-weight: 300; }
+.footer-logo em { font-style: italic; color: var(--teal-400); }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { font-size: 12px; color: var(--ink-light); text-decoration: none; letter-spacing: 0.04em; cursor: pointer; }
+.footer-copy { font-size: 11px; color: var(--ink-light); letter-spacing: 0.04em; }
+
+/* ── DIVIDER ── */
+.divider { height: 0.5px; background: var(--stone-200); margin: 0 5rem; }
+
+/* ── PULL QUOTE ── */
+.pullquote-section { padding: 4rem 5rem; display: flex; justify-content: center; }
+.pullquote {
+  max-width: 560px;
+  font-family: var(--serif);
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--teal-800);
+  line-height: 1.5;
+  text-align: center;
+  position: relative;
+}
+.pullquote::before {
+  content: '"';
+  font-size: 80px;
+  color: var(--teal-100);
+  position: absolute;
+  top: -20px;
+  left: -30px;
+  font-style: normal;
+  line-height: 1;
+}
+
+/* ── ANIMATION STAGGER ── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp 0.6s ease forwards;
+}
+.fade-up:nth-child(2) { animation-delay: 0.1s; }
+.fade-up:nth-child(3) { animation-delay: 0.2s; }
+.fade-up:nth-child(4) { animation-delay: 0.3s; }
+@keyframes fadeUp { to { opacity: 1; transform: none; } }
+
+/* ── TARIFS ── */
+.tarifs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 2rem; }
+.tarif-card {
+  border: 0.5px solid var(--stone-200);
+  border-radius: 4px;
+  padding: 2rem 1.75rem;
+  background: var(--stone);
+  transition: border-color 0.2s;
+}
+.tarif-card:hover { border-color: var(--teal-100); }
+.tarif-card.featured { border-color: var(--teal-400); border-width: 1px; background: var(--teal-50); }
+.tarif-badge { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--teal-600); margin-bottom: 1rem; }
+.tarif-name { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 0.5rem; }
+.tarif-price { font-family: var(--serif); font-size: 40px; font-weight: 300; color: var(--teal-400); line-height: 1; margin-bottom: 0.25rem; }
+.tarif-unit { font-size: 12px; color: var(--ink-light); margin-bottom: 1.5rem; }
+.tarif-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.tarif-features li { font-size: 13px; color: var(--ink-light); padding-left: 14px; position: relative; }
+.tarif-features li::before { content: '·'; position: absolute; left: 0; color: var(--teal-400); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { padding: 3rem 1.5rem; }
+  .hero-right { height: 300px; }
+  .hero-title { font-size: 40px; }
+  .section { padding: 3rem 1.5rem; }
+  .section-sm { padding: 2rem 1.5rem; }
+  .band { padding: 1rem 1.5rem; gap: 1rem; }
+  .about-grid { grid-template-columns: 1fr; }
+  .protocole { padding: 3rem 1.5rem; }
+  .protocole-steps { grid-template-columns: 1fr; gap: 2rem; }
+  .cards-3 { grid-template-columns: 1fr; }
+  .formations-grid { grid-template-columns: 1fr; }
+  .tarifs-grid { grid-template-columns: 1fr; }
+  .soin-hero { padding: 3rem 1.5rem; }
+  .soin-hero-inner { grid-template-columns: 1fr; }
+  .indications { padding: 3rem 1.5rem; }
+  .indic-grid { grid-template-columns: 1fr 1fr; }
+  footer { padding: 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+  .contact-wrap { padding: 3rem 1.5rem; }
+  .histoire-wrap { padding: 3rem 1.5rem; }
+  .pullquote-section { padding: 3rem 1.5rem; }
+  .pullquote { font-size: 22px; }
+  .divider { margin: 0 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <div class="nav-logo" onclick="showPage('accueil')">Le <em>Dixième</em> Nerf</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('accueil')" class="active" id="nav-accueil">Accueil</a></li>
+    <li><a onclick="showPage('soin')" id="nav-soin">Le soin</a></li>
+    <li><a onclick="showPage('histoire')" id="nav-histoire">Mon histoire</a></li>
+    <li><a onclick="showPage('formations')" id="nav-formations">Formations</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact & Tarifs</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('contact')">Prendre rendez-vous</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1 — ACCUEIL
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-accueil">
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-tag fade-up">Kinésithérapie · Soin hors nomenclature · Nerf vague</div>
+      <h1 class="hero-title fade-up">Réguler<br>par le <em>nerf<br>vague.</em></h1>
+      <p class="hero-sub fade-up">Un protocole de soin unique, construit à l'intersection de la kinésithérapie, des neurosciences et du toucher thérapeutique. Par Ophélie Blondel.</p>
+      <div class="hero-ctas fade-up">
+        <button class="btn-primary" onclick="showPage('soin')">Découvrir le soin</button>
+        <button class="btn-ghost" onclick="showPage('histoire')">Mon parcours →</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="nerve-wrap">
+        <svg width="280" height="420" viewBox="0 0 280 420" xmlns="http://www.w3.org/2000/svg">
+          <!-- Tronc principal -->
+          <path d="M140 18 C140 18 137 65 132 100 C127 135 114 148 112 182 C110 216 124 228 126 264 C128 300 114 320 112 354 C110 388 126 408 140 418" stroke="#1D9E75" stroke-width="1.8" fill="none" opacity="0.7"/>
+          <!-- Branches cervicales -->
+          <path d="M132 100 C132 100 102 106 84 118 C66 130 55 148 50 164" stroke="#5DCAA5" stroke-width="1.2" fill="none" opacity="0.55"/>
+          <path d="M132 100 C132 100 160 103 176 113 C192 123 202 136 208 152" stroke="#5DCAA5" stroke-width="1.2" fill="none" opacity="0.55"/>
+          <!-- Branches thoraciques -->
+          <path d="M112 182 C112 182 80 178 62 188 C44 198 34 212 30 228" stroke="#9FE1CB" stroke-width="0.9" fill="none" opacity="0.45"/>
+          <path d="M112 182 C112 182 144 176 160 184 C176 192 188 206 194 222" stroke="#9FE1CB" stroke-width="0.9" fill="none" opacity="0.45"/>
+          <!-- Branches abdominales -->
+          <path d="M126 264 C126 264 96 260 78 272 C60 284 52 300 48 316" stroke="#9FE1CB" stroke-width="0.8" fill="none" opacity="0.35"/>
+          <path d="M126 264 C126 264 154 258 170 268 C186 278 196 294 200 310" stroke="#9FE1CB" stroke-width="0.8" fill="none" opacity="0.35"/>
+          <!-- Noeuds -->
+          <circle cx="140" cy="18" r="6" fill="#1D9E75" opacity="0.9"/>
+          <circle cx="132" cy="100" r="4" fill="#5DCAA5" opacity="0.85"/>
+          <circle cx="112" cy="182" r="4" fill="#5DCAA5" opacity="0.8"/>
+          <circle cx="126" cy="264" r="4" fill="#5DCAA5" opacity="0.7"/>
+          <circle cx="140" cy="418" r="4.5" fill="#1D9E75" opacity="0.5"/>
+          <!-- Labels -->
+          <text x="155" y="22" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.7" font-style="italic">tronc cérébral</text>
+          <text x="220" y="104" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.65" font-style="italic">cœur</text>
+          <text x="200" y="186" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.65" font-style="italic">poumons</text>
+          <text x="206" y="268" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.6" font-style="italic">abdomen</text>
+          <text x="150" y="422" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.5" font-style="italic">système digestif</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="band-pill"><div class="band-dot"></div>Kinésithérapeute diplômée d'État</div>
+    <div class="band-pill"><div class="band-dot"></div>Formations en neurosciences appliquées</div>
+    <div class="band-pill"><div class="band-dot"></div>Protocole vagal exclusif</div>
+    <div class="band-pill"><div class="band-dot"></div>Séances en présentiel & distanciel</div>
+    <div class="band-pill"><div class="band-dot"></div>Lille & région Hauts-de-France</div>
+  </div>
+
+  <!-- Le soin en 3 temps -->
+  <section class="section">
+    <div class="section-label">Le protocole</div>
+    <h2 class="section-title">Le soin en <em>3 temps</em></h2>
+    <div class="cards-3">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">Évaluer</div>
+        <div class="card-desc">Lecture du tonus vagal, observation posturale et bilan du système nerveux autonome. Identifier l'état de votre système nerveux avant d'agir.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">Activer</div>
+        <div class="card-desc">Techniques manuelles douces, respiration guidée et stimulation ciblée du nerf vague. Réveiller la voie parasympathique, celle du calme et de la régulation.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-title">Ancrer</div>
+        <div class="card-desc">Intégration corporelle et transmission de ressources autonomes. Repartir avec des clés concrètes pour réguler votre système nerveux au quotidien.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Pourquoi le nerf vague -->
+  <section class="pullquote-section">
+    <p class="pullquote">Le corps sait se réparer. Il faut juste lui en donner les clés.</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Mini about -->
+  <section class="section">
+    <div class="about-grid">
+      <div class="about-portrait">
+        <div class="about-initials">O.B.</div>
+      </div>
+      <div>
+        <div class="section-label">La praticienne</div>
+        <h2 class="about-title" style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;margin-bottom:1.25rem;">Kiné de formation,<br><em style="font-style:italic;">vagale</em> de conviction.</h2>
+        <p class="about-p">Après dix ans de pratique clinique et une quête de formations continues, Ophélie Blondel a trouvé le fil conducteur qui relie tout : le nerf vague. C'est le pont entre la douleur, le stress, la digestion, le sommeil, le mouvement.</p>
+        <p class="about-p">Elle a vécu elle-même l'effondrement du stress chronique. Et c'est en cherchant à comprendre son propre système nerveux qu'elle a construit ce soin.</p>
+        <div class="tags">
+          <span class="tag">Thérapie manuelle</span>
+          <span class="tag">Neurosciences</span>
+          <span class="tag">Fasciathérapie</span>
+          <span class="tag">Breathwork</span>
+          <span class="tag">Polyvagal</span>
+          <span class="tag">Cryothérapie</span>
+          <span class="tag">Técarthérapie</span>
+        </div>
+        <div style="margin-top:2rem;">
+          <button class="btn-primary" onclick="showPage('histoire')">Lire mon histoire</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-links">
+      <a onclick="showPage('soin')">Le soin</a>
+      <a onclick="showPage('histoire')">Mon histoire</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Ophélie Blondel · Kinésithérapeute</div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2 — LE SOIN
+═══════════════════════════════════════════ -->
+<div class="page" id="page-soin">
+
+  <section class="soin-hero">
+    <div class="soin-hero-inner">
+      <div>
+        <div class="section-label">Soin hors nomenclature</div>
+        <h1 class="soin-title">Le soin<br><em>vagal</em></h1>
+        <p class="soin-desc" style="font-size:15px;line-height:1.85;color:var(--ink-light);margin-top:1rem;">Le nerf vague — dixième paire crânienne — est le chef d'orchestre de votre système nerveux autonome. Il relie votre cerveau à votre cœur, vos poumons, votre intestin. Quand il fonctionne bien, le corps régule le stress, la douleur, la digestion, le sommeil. Quand il est sous-actif, tout devient plus difficile.</p>
+        <p class="soin-desc" style="font-size:15px;line-height:1.85;color:var(--ink-light);margin-top:1rem;">Ce soin est conçu pour le réactiver. Par des techniques manuelles précises, la respiration guidée et un travail d'intégration corporelle.</p>
+      </div>
+      <div class="soin-visual">
+        <div class="soin-stat">
+          <div class="soin-stat-num">−60%</div>
+          <div class="soin-stat-label">Réduction des scores d'anxiété observée</div>
+        </div>
+        <div class="soin-stat">
+          <div class="soin-stat-num">+70%</div>
+          <div class="soin-stat-label">Amélioration de la qualité du sommeil</div>
+        </div>
+        <div class="soin-stat">
+          <div class="soin-stat-num">−40%</div>
+          <div class="soin-stat-label">Diminution des douleurs chroniques</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Protocole détaillé -->
+  <section class="protocole">
+    <div class="section-label">Le protocole en détail</div>
+    <h2 class="section-title">Trois temps,<br><em>une logique</em></h2>
+    <div class="protocole-steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Évaluer</div>
+        <div class="step-desc">Avant d'agir, comprendre. On observe l'état du système nerveux autonome : posture, tonus, réactivité, variabilité cardiaque. Chaque séance commence par une écoute.</div>
+        <div class="step-techniques">
+          <div class="step-tech">Bilan postural</div>
+          <div class="step-tech">Observation du tonus vagal</div>
+          <div class="step-tech">Anamnèse ciblée</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Activer</div>
+        <div class="step-desc">Les mains d'abord. Des manœuvres cervicales douces, une mobilisation diaphragmatique, des techniques crâniennes. Puis la respiration cohérente, pour entraîner le nerf vague vers l'état parasympathique.</div>
+        <div class="step-techniques">
+          <div class="step-tech">Stimulations cervicales</div>
+          <div class="step-tech">Mobilisation du diaphragme</div>
+          <div class="step-tech">Techniques crâniennes</div>
+          <div class="step-tech">Respiration cohérente guidée</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Ancrer</div>
+        <div class="step-desc">Ce qui se passe en séance ne doit pas s'arrêter là. On prend le temps d'intégrer, de ressentir, et d'identifier deux ou trois ressources autonomes à emporter dans la vie quotidienne.</div>
+        <div class="step-techniques">
+          <div class="step-tech">Intégration sensorielle</div>
+          <div class="step-tech">Ressources d'autorégulation</div>
+          <div class="step-tech">Protocole maison personnalisé</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider" style="margin:0;"></div>
+
+  <!-- Indications -->
+  <section class="indications">
+    <div class="section-label">Pour qui ?</div>
+    <h2 class="section-title">Ce soin s'adresse à ceux qui vivent avec…</h2>
+    <div class="indic-grid">
+      <div class="indic-pill"><div class="indic-dot"></div>Stress chronique & burn-out</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Anxiété & attaques de panique</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Troubles du sommeil</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Douleurs chroniques & fibromyalgie</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Migraines & céphalées de tension</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Troubles digestifs fonctionnels</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Fatigue inexpliquée</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Sensation de déconnexion corporelle</div>
+      <div class="indic-pill"><div class="indic-dot"></div>Récupération post-traumatique</div>
+    </div>
+  </section>
+
+  <!-- Tarifs -->
+  <section class="section">
+    <div class="section-label">Tarifs</div>
+    <h2 class="section-title">Choisissez <em>votre format</em></h2>
+    <div class="tarifs-grid">
+      <div class="tarif-card">
+        <div class="tarif-badge">Découverte</div>
+        <div class="tarif-name">Séance unique</div>
+        <div class="tarif-price">90€</div>
+        <div class="tarif-unit">60 minutes · présentiel</div>
+        <ul class="tarif-features">
+          <li>Bilan initial inclus</li>
+          <li>Protocole complet en 3 temps</li>
+          <li>Ressources autonomes</li>
+        </ul>
+      </div>
+      <div class="tarif-card featured">
+        <div class="tarif-badge">Recommandé</div>
+        <div class="tarif-name">Pack 3 séances</div>
+        <div class="tarif-price">250€</div>
+        <div class="tarif-unit">3 × 60 min · présentiel</div>
+        <ul class="tarif-features">
+          <li>Suivi progressif personnalisé</li>
+          <li>Bilan évolution entre séances</li>
+          <li>Protocole maison évolutif</li>
+          <li>Résultats durables</li>
+        </ul>
+      </div>
+      <div class="tarif-card">
+        <div class="tarif-badge">À distance</div>
+        <div class="tarif-name">Séance en ligne</div>
+        <div class="tarif-price">70€</div>
+        <div class="tarif-unit">50 minutes · visioconférence</div>
+        <ul class="tarif-features">
+          <li>Respiration & guidance vagale</li>
+          <li>Protocole d'autorégulation</li>
+          <li>Idéal pour le suivi</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:2rem;text-align:center;">
+      <button class="btn-primary" onclick="showPage('contact')">Réserver une séance</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-links">
+      <a onclick="showPage('accueil')">Accueil</a>
+      <a onclick="showPage('histoire')">Mon histoire</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Ophélie Blondel · Kinésithérapeute</div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3 — MON HISTOIRE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-histoire">
+  <div class="histoire-wrap">
+    <div class="h-eyebrow">Ophélie Blondel · Kinésithérapeute · Histoire de marque</div>
+    <h1 class="h-main-title">Le corps sait<br>se <em>réparer</em>.</h1>
+    <p class="h-main-sub">Il fallait juste qu'on lui en donne les clés.</p>
+    <div class="h-rule"></div>
+
+    <div class="h-chapter">
+      <div class="h-chapter-label">Chapitre I</div>
+      <h2 class="h-chapter-title">La kiné qui soignait tout le monde, sauf elle.</h2>
+      <p class="h-p">Ophélie Blondel est kinésithérapeute depuis plus de dix ans. Dès ses premières années de pratique, elle est celle qu'on vient voir pour les douleurs qui durent, les corps épuisés, les récupérations qui traînent. Elle aime ce travail. Elle y met tout.</p>
+      <p class="h-p">Trop, peut-être. Parce qu'un jour, c'est son propre corps qui parle. Le stress s'est installé en silence, puis il a tout envahi — le sommeil, la digestion, l'énergie, la clarté d'esprit. Elle reconnaît les symptômes chez ses patients depuis des années. Mais là, c'est elle.</p>
+      <div class="h-pull">"Je savais faire de la kiné. Je ne savais pas encore comment le corps régule, résiste, et s'effondre quand on ne l'écoute plus."</div>
+    </div>
+
+    <hr class="h-sep">
+
+    <div class="h-chapter">
+      <div class="h-chapter-label">Chapitre II</div>
+      <h2 class="h-chapter-title">Une formation, et tout change de sens.</h2>
+      <p class="h-p">C'est dans une salle de formation qu'elle entend pour la première fois parler du nerf vague avec précision. Le dixième nerf crânien. Celui qui relie le cerveau au cœur, aux poumons, à l'intestin. Celui qui commande l'état de sécurité ou d'alarme du système nerveux.</p>
+      <p class="h-p">Elle fait le lien immédiatement. Ce qu'elle observe depuis des années chez ses patients — les douleurs chroniques inexpliquées, les inflammations qui récidivent, les corps qui ne récupèrent plus — tout cela a une cohérence. Une architecture. Et au centre de cette architecture : le nerf vague.</p>
+      <div class="h-pull">"Ce n'était pas une formation de plus. C'était la pièce manquante d'un puzzle que je construisais depuis dix ans."</div>
+      <p class="h-p">Elle commence à appliquer les techniques sur elle-même. Stimulations cervicales douces, respiration cohérente, mobilisation diaphragmatique. Progressivement, quelque chose se dépose. Son système nerveux apprend à revenir au calme. Elle comprend dans son propre corps ce qu'elle ne pouvait qu'observer chez les autres.</p>
+    </div>
+
+    <hr class="h-sep">
+
+    <div class="h-chapter">
+      <div class="h-chapter-label">Chapitre III</div>
+      <h2 class="h-chapter-title">Quand toutes les formations parlent la même langue.</h2>
+      <p class="h-p">Ce qui suit, c'est une relecture de tout ce qu'elle sait. Le drainage lymphatique — elle le comprend autrement : une technique qui apaise le système nerveux autant qu'elle draine les tissus. La cryothérapie — ce choc thermique qui force le corps à mobiliser ses ressources les plus profondes. Les ondes de choc — qui libèrent des endorphines par les mêmes voies que la stimulation vagale.</p>
+      <p class="h-p">Chaque formation qu'elle a suivie, chaque technique qu'elle a apprise, s'articule autour du même axe : aider le système nerveux autonome à retrouver son équilibre. Le nerf vague n'est pas une spécialité parmi d'autres. C'est le langage commun de toute sa pratique.</p>
+      <div class="h-pull">"J'avais toutes les pièces. Il me manquait juste le nom de ce qu'elles formaient ensemble."</div>
+    </div>
+
+    <hr class="h-sep">
+
+    <div class="h-chapter">
+      <div class="h-chapter-label">Chapitre IV</div>
+      <h2 class="h-chapter-title">Le Dixième Nerf naît.</h2>
+      <p class="h-p">Aujourd'hui, Ophélie crée un espace de soin à part entière autour de ce fil conducteur. Un soin hors nomenclature, construit sur dix ans de pratique clinique et de formations continues — un protocole qui associe les mains d'une kiné, la rigueur des neurosciences, et une conviction simple :</p>
+      <div class="h-pull">"Le corps sait se réparer. Il faut juste lui en donner les clés."</div>
+      <p class="h-p">Ce n'est pas une promesse de bien-être vague. C'est une approche précise, incarnée, née d'une expérience réelle. La sienne d'abord. Puis celle de ses patients, qui repartent avec quelque chose qu'ils n'avaient pas en entrant : une relation différente à leur propre système nerveux.</p>
+    </div>
+
+    <div class="h-tagline-box">
+      <p class="h-tagline">Le Dixième Nerf —<br>soigner depuis la racine.</p>
+      <p class="h-tagline-sub">Ophélie Blondel · Kinésithérapeute · Pratique HN · Nerf vague</p>
+    </div>
+
+    <div style="margin-top:2.5rem;display:flex;gap:1rem;">
+      <button class="btn-primary" onclick="showPage('soin')">Découvrir le soin →</button>
+      <button class="btn-ghost" onclick="showPage('contact')">Prendre rendez-vous</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-links">
+      <a onclick="showPage('accueil')">Accueil</a>
+      <a onclick="showPage('soin')">Le soin</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Ophélie Blondel · Kinésithérapeute</div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 4 — FORMATIONS
+═══════════════════════════════════════════ -->
+<div class="page" id="page-formations">
+  <section class="section">
+    <div class="section-label">Expertises & certifications</div>
+    <h1 class="section-title" style="font-size:46px;">Dix ans de formations,<br><em>un seul fil conducteur.</em></h1>
+    <p style="font-size:15px;color:var(--ink-light);line-height:1.85;max-width:560px;margin-bottom:3rem;">Chaque formation suivie n'est pas une ligne sur un CV. C'est une compétence supplémentaire mise au service du même objectif : aider le système nerveux autonome à retrouver son équilibre.</p>
+
+    <div class="formations-grid">
+      <div class="f-card">
+        <div class="f-card-tag">Formation centrale · 80h</div>
+        <h3 class="f-card-title">Stimulation du nerf vague</h3>
+        <p class="f-card-desc">Techniques de modulation vagale pour régulation du stress et de la douleur. Approche pionnière en kinésithérapie française. Stimulations cervicales, diaphragmatiques, crâniennes. La formation qui a tout changé.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Techniques cervicales</span>
+          <span class="tag">Respiration cohérente</span>
+          <span class="tag">Approche crânienne</span>
+        </div>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card-tag">Certifié Vodder · 90h</div>
+        <h3 class="f-card-title">Drainage lymphatique manuel</h3>
+        <p class="f-card-desc">Méthode Vodder reconnue internationalement. Au-delà du drainage tissulaire, une technique qui apaise profondément le système nerveux autonome. Relaxation neuro-végétative, réduction du stress, amélioration du sommeil.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Méthode Vodder</span>
+          <span class="tag">Neuro-végétatif</span>
+          <span class="tag">Récupération</span>
+        </div>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card-tag">Certifié WINBACK · 50h</div>
+        <h3 class="f-card-title">Técarthérapie</h3>
+        <p class="f-card-desc">Thérapie par énergie capacitive et résistive. Des courants de haute fréquence qui accélèrent le métabolisme cellulaire, stimulent la circulation et activent les fibroblastes. Résultats 2 à 3 fois plus rapides.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Haute fréquence</span>
+          <span class="tag">Tissu profond</span>
+          <span class="tag">Sport & récupération</span>
+        </div>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card-tag">Swiss DolorClast · 35h</div>
+        <h3 class="f-card-title">Ondes de choc radiales et focales</h3>
+        <p class="f-card-desc">Application thérapeutique pour pathologies chroniques. Néovascularisation, dissolution des calcifications, libération endorphinique par les mêmes voies que la stimulation vagale. Alternative à la chirurgie pour de nombreuses pathologies.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Tendinopathies</span>
+          <span class="tag">Douleurs chroniques</span>
+          <span class="tag">Endorphines</span>
+        </div>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card-tag">Certification cryogénique · 25h</div>
+        <h3 class="f-card-title">Cryothérapie corps entier</h3>
+        <p class="f-card-desc">Exposition au froid extrême (−110°C à −140°C). Un choc thermique qui active les mêmes voies de régulation que le nerf vague : libération d'endorphines, activation circulatoire, réduction de l'inflammation par action sur les cytokines.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Récupération sportive</span>
+          <span class="tag">Inflammation</span>
+          <span class="tag">Bien-être mental</span>
+        </div>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card-tag">Formation obligatoire · 40h/3 ans</div>
+        <h3 class="f-card-title">DPC — Développement professionnel continu</h3>
+        <p class="f-card-desc">Maintien et actualisation des connaissances professionnelles. Socle scientifique de toute la pratique. Intégration des dernières recommandations de bonne pratique basée sur les preuves.</p>
+        <div class="tags" style="margin-top:0.75rem;">
+          <span class="tag">Evidence-based</span>
+          <span class="tag">Protocoles validés</span>
+          <span class="tag">Rigueur scientifique</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chiffres engagement -->
+  <section style="background:var(--teal-50);padding:4rem 5rem;">
+    <div class="section-label">Engagement formation</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3rem;margin-top:1.5rem;">
+      <div>
+        <div style="font-family:var(--serif);font-size:52px;font-weight:300;color:var(--teal-400);line-height:1;">200h</div>
+        <div style="font-size:13px;color:var(--teal-600);margin-top:0.25rem;letter-spacing:0.06em;">de formation continue par an</div>
+      </div>
+      <div>
+        <div style="font-family:var(--serif);font-size:52px;font-weight:300;color:var(--teal-400);line-height:1;">5+</div>
+        <div style="font-size:13px;color:var(--teal-600);margin-top:0.25rem;letter-spacing:0.06em;">certifications actives</div>
+      </div>
+      <div>
+        <div style="font-family:var(--serif);font-size:52px;font-weight:300;color:var(--teal-400);line-height:1;">10</div>
+        <div style="font-size:13px;color:var(--teal-600);margin-top:0.25rem;letter-spacing:0.06em;">ans de pratique clinique</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-links">
+      <a onclick="showPage('accueil')">Accueil</a>
+      <a onclick="showPage('soin')">Le soin</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Ophélie Blondel · Kinésithérapeute</div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 5 — CONTACT & TARIFS
+═══════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div style="display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 64px);">
+
+    <!-- Formulaire -->
+    <div style="padding:5rem 4rem;border-right:0.5px solid var(--stone-200);">
+      <div class="section-label">Prise de rendez-vous</div>
+      <h1 style="font-family:var(--serif);font-size:38px;font-weight:300;margin-bottom:0.5rem;line-height:1.2;">Réservez votre<br><em style="font-style:italic;color:var(--teal-400);">séance vagale</em></h1>
+      <p style="font-size:14px;color:var(--ink-light);line-height:1.8;margin-bottom:2.5rem;margin-top:0.75rem;">Je vous réponds sous 24h pour confirmer le créneau. Toutes les premières séances débutent par un échange de 10 minutes pour comprendre votre situation.</p>
+
+      <div class="form-group">
+        <label class="form-label">Prénom & Nom</label>
+        <input class="form-input" type="text" placeholder="Marie Dupont">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="marie@exemple.fr">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input class="form-input" type="tel" placeholder="06 00 00 00 00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Format souhaité</label>
+        <select class="form-select">
+          <option>Séance unique en présentiel — 90€</option>
+          <option>Pack 3 séances en présentiel — 250€</option>
+          <option>Séance en ligne — 70€</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Votre situation en quelques mots</label>
+        <textarea class="form-textarea" placeholder="Ce qui vous amène, vos symptômes principaux, vos attentes…"></textarea>
+      </div>
+      <button class="form-submit">Envoyer ma demande →</button>
+    </div>
+
+    <!-- Infos pratiques -->
+    <div style="padding:5rem 4rem;background:var(--stone-100);">
+      <div class="section-label">Infos pratiques</div>
+      <h2 style="font-family:var(--serif);font-size:30px;font-weight:300;margin-bottom:2.5rem;line-height:1.3;">Ce à quoi vous<br>pouvez vous attendre.</h2>
+
+      <div style="display:flex;flex-direction:column;gap:2rem;">
+        <div style="border-top:0.5px solid var(--stone-200);padding-top:1.5rem;">
+          <div class="section-label" style="margin-bottom:0.4rem;">Lieu</div>
+          <div style="font-size:14px;line-height:1.7;">Cabinet kinésithérapie<br>Région Hauts-de-France · Lille</div>
+        </div>
+        <div style="border-top:0.5px solid var(--stone-200);padding-top:1.5rem;">
+          <div class="section-label" style="margin-bottom:0.4rem;">Durée des séances</div>
+          <div style="font-size:14px;line-height:1.7;">60 minutes en présentiel<br>50 minutes en visioconférence</div>
+        </div>
+        <div style="border-top:0.5px solid var(--stone-200);padding-top:1.5rem;">
+          <div class="section-label" style="margin-bottom:0.4rem;">À prévoir</div>
+          <div style="font-size:14px;color:var(--ink-light);line-height:1.7;">Vêtements confortables. Aucun matériel particulier. Prévoir 10 min de repos après la séance si possible.</div>
+        </div>
+        <div style="border-top:0.5px solid var(--stone-200);padding-top:1.5rem;">
+          <div class="section-label" style="margin-bottom:0.4rem;">Remboursement</div>
+          <div style="font-size:14px;color:var(--ink-light);line-height:1.7;">Soin hors nomenclature, non remboursé par la Sécurité sociale. Certaines mutuelles prennent en charge les soins de bien-être — renseignez-vous auprès de la vôtre.</div>
+        </div>
+        <div style="border-top:0.5px solid var(--stone-200);padding-top:1.5rem;">
+          <div class="section-label" style="margin-bottom:0.4rem;">Contact direct</div>
+          <div style="font-size:14px;line-height:1.7;color:var(--teal-600);">ophelie@ledixiemenerf.fr</div>
+        </div>
+      </div>
+
+      <!-- Pull quote -->
+      <div style="margin-top:3rem;padding:1.5rem 2rem;border:0.5px solid var(--teal-100);border-radius:4px;background:var(--teal-50);">
+        <p style="font-family:var(--serif);font-size:18px;font-style:italic;font-weight:300;color:var(--teal-800);line-height:1.6;">"Chaque séance commence par une écoute. Le soin vient après."</p>
+        <p style="font-size:12px;color:var(--teal-600);margin-top:0.5rem;letter-spacing:0.06em;">— Ophélie Blondel</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-links">
+      <a onclick="showPage('accueil')">Accueil</a>
+      <a onclick="showPage('soin')">Le soin</a>
+      <a onclick="showPage('histoire')">Mon histoire</a>
+    </div>
+    <div class="footer-copy">© 2026 Ophélie Blondel · Kinésithérapeute</div>
+  </footer>
+</div>
+
+<!-- ── JS NAVIGATION ── -->
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
