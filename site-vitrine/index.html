@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Le Dixième Nerf · Ophélie Blondel</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
@@ -58,7 +59,11 @@ nav {
   letter-spacing: 0.04em;
   color: var(--ink);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+.nav-logo .nav-logo-mark { width: 30px; height: 30px; display: block; }
 .nav-logo em { font-style: italic; color: var(--teal-400); }
 
 .nav-links {
@@ -127,14 +132,14 @@ nav {
 }
 .hero-title em { font-style: italic; color: var(--teal-400); }
 .hero-sub {
-  font-size: 15px;
-  font-weight: 300;
+  font-size: 15.5px;
+  font-weight: 400;
   color: var(--ink-light);
-  line-height: 1.8;
-  max-width: 380px;
-  margin-bottom: 3rem;
+  line-height: 1.9;
+  max-width: 400px;
+  margin-bottom: 3.5rem;
 }
-.hero-ctas { display: flex; gap: 1.5rem; align-items: center; }
+.hero-ctas { display: flex; gap: 2rem; align-items: center; }
 .btn-primary {
   background: var(--teal-800);
   color: var(--teal-50);
@@ -429,6 +434,7 @@ footer {
   align-items: center;
 }
 .footer-logo { font-family: var(--serif); font-size: 16px; font-weight: 300; }
+.footer-logo img { height: 40px; width: auto; display: block; }
 .footer-logo em { font-style: italic; color: var(--teal-400); }
 .footer-links { display: flex; gap: 2rem; }
 .footer-links a { font-size: 12px; color: var(--ink-light); text-decoration: none; letter-spacing: 0.04em; cursor: pointer; }
@@ -525,7 +531,7 @@ footer {
 
 <!-- ── NAVIGATION ── -->
 <nav>
-  <div class="nav-logo" onclick="showPage('accueil')">Le <em>Dixième</em> Nerf</div>
+  <div class="nav-logo" onclick="showPage('accueil')"><img class="nav-logo-mark" src="assets/logo-mark.png" alt="Le Dixième Nerf — logo">Le <em>Dixième</em> Nerf</div>
   <ul class="nav-links">
     <li><a onclick="showPage('accueil')" class="active" id="nav-accueil">Accueil</a></li>
     <li><a onclick="showPage('soin')" id="nav-soin">Le soin</a></li>
@@ -545,7 +551,7 @@ footer {
     <div class="hero-left">
       <div class="hero-tag fade-up">Kinésithérapie · Soin hors nomenclature · Nerf vague</div>
       <h1 class="hero-title fade-up">Réguler<br>par le <em>nerf<br>vague.</em></h1>
-      <p class="hero-sub fade-up">Un protocole de soin unique, construit à l'intersection de la kinésithérapie, des neurosciences et du toucher thérapeutique. Par Ophélie Blondel.</p>
+      <p class="hero-sub fade-up">Un protocole de soin unique, construit à l'intersection de la kinésithérapie, des neurosciences et du toucher thérapeutique. <strong style="font-weight:400;color:var(--teal-800);">Par Ophélie Blondel</strong>, kinésithérapeute.</p>
       <div class="hero-ctas fade-up">
         <button class="btn-primary" onclick="showPage('soin')">Découvrir le soin</button>
         <button class="btn-ghost" onclick="showPage('histoire')">Mon parcours →</button>
@@ -571,12 +577,12 @@ footer {
           <circle cx="112" cy="182" r="4" fill="#5DCAA5" opacity="0.8"/>
           <circle cx="126" cy="264" r="4" fill="#5DCAA5" opacity="0.7"/>
           <circle cx="140" cy="418" r="4.5" fill="#1D9E75" opacity="0.5"/>
-          <!-- Labels -->
-          <text x="155" y="22" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.7" font-style="italic">tronc cérébral</text>
-          <text x="220" y="104" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.65" font-style="italic">cœur</text>
-          <text x="200" y="186" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.65" font-style="italic">poumons</text>
-          <text x="206" y="268" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.6" font-style="italic">abdomen</text>
-          <text x="150" y="422" font-family="'Cormorant Garamond', serif" font-size="12" fill="#085041" opacity="0.5" font-style="italic">système digestif</text>
+          <!-- Labels (assombris pour lisibilité) -->
+          <text x="155" y="22" font-family="'Cormorant Garamond', serif" font-size="13" fill="#085041" opacity="0.95" font-style="italic" font-weight="500">tronc cérébral</text>
+          <text x="220" y="104" font-family="'Cormorant Garamond', serif" font-size="13" fill="#085041" opacity="0.95" font-style="italic" font-weight="500">cœur</text>
+          <text x="200" y="186" font-family="'Cormorant Garamond', serif" font-size="13" fill="#085041" opacity="0.95" font-style="italic" font-weight="500">poumons</text>
+          <text x="206" y="268" font-family="'Cormorant Garamond', serif" font-size="13" fill="#085041" opacity="0.9" font-style="italic" font-weight="500">abdomen</text>
+          <text x="150" y="422" font-family="'Cormorant Garamond', serif" font-size="13" fill="#085041" opacity="0.85" font-style="italic" font-weight="500">système digestif</text>
         </svg>
       </div>
     </div>
@@ -650,7 +656,7 @@ footer {
   </section>
 
   <footer>
-    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-logo"><img src="assets/logo-lockup.png" alt="Le Dixième Nerf · Ophélie Blondel"></div>
     <div class="footer-links">
       <a onclick="showPage('soin')">Le soin</a>
       <a onclick="showPage('histoire')">Mon histoire</a>
@@ -794,7 +800,7 @@ footer {
   </section>
 
   <footer>
-    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-logo"><img src="assets/logo-lockup.png" alt="Le Dixième Nerf · Ophélie Blondel"></div>
     <div class="footer-links">
       <a onclick="showPage('accueil')">Accueil</a>
       <a onclick="showPage('histoire')">Mon histoire</a>
@@ -865,7 +871,7 @@ footer {
   </div>
 
   <footer>
-    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-logo"><img src="assets/logo-lockup.png" alt="Le Dixième Nerf · Ophélie Blondel"></div>
     <div class="footer-links">
       <a onclick="showPage('accueil')">Accueil</a>
       <a onclick="showPage('soin')">Le soin</a>
@@ -973,7 +979,7 @@ footer {
   </section>
 
   <footer>
-    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-logo"><img src="assets/logo-lockup.png" alt="Le Dixième Nerf · Ophélie Blondel"></div>
     <div class="footer-links">
       <a onclick="showPage('accueil')">Accueil</a>
       <a onclick="showPage('soin')">Le soin</a>
@@ -1059,7 +1065,7 @@ footer {
   </div>
 
   <footer>
-    <div class="footer-logo">Le <em>Dixième</em> Nerf</div>
+    <div class="footer-logo"><img src="assets/logo-lockup.png" alt="Le Dixième Nerf · Ophélie Blondel"></div>
     <div class="footer-links">
       <a onclick="showPage('accueil')">Accueil</a>
       <a onclick="showPage('soin')">Le soin</a>

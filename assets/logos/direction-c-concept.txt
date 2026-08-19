@@ -1,0 +1,44 @@
+Direction C — « Le rythme caché »
+===============================
+
+STATUT : LOGO OFFICIEL (mark + lockup + déclinaisons validées)
+
+CONCEPT
+-------
+Trois ondes déphasées (hauteurs et positions différentes) tracent le geste d'une danse
+contemporaine : le nerf vague qui vibre et danse. Un point focal — battement accent posé
+au sommet de l'onde principale — révèle le rythme intérieur caché sous la fluidité du
+mouvement. Teal en trois profondeurs (400 / 800 / 600), organique et dansé.
+
+Profil : praticienne musicienne + danse contemporaine → le rythme et le mouvement restent
+lisibles dans toutes les déclinaisons.
+
+CHARTE (stricte, aucune invention)
+----------------------------------
+teal-50  #E1F5EE · teal-100 #9FE1CB · teal-400 #1D9E75
+teal-600 #0F6E56 · teal-800 #085041 · teal-900 #04342C
+stone    #FAFAF7 (fond clair) · ink #1a1a18
+Typo : Cormorant Garamond (nom) + DM Sans (sous-titre)
+
+FICHIERS (dossier assets/logos/)
+--------------------------------
+direction-c-mark.svg / .png
+    Le mark original (référence, ne pas modifier).
+
+direction-c-lockup.svg / .png
+    Lockup centré vertical (mark au-dessus, nom + sous-titre).
+
+direction-c-favicon.svg / .png
+    Version simplifiée : UN SEUL geste épaissi (l'onde principale) + battement accent.
+    Conçue pour rester nette et lisible à 32 px.
+
+direction-c-lockup-horizontal.svg / .png
+    Lockup horizontal (mark à gauche, « OPHÉLIE BLONDEL » + « Kiné · Nerf vague »
+    alignés à gauche) — réseaux sociaux, pieds de page, signatures email.
+
+direction-c-app.png
+    Icône d'application 600×600, fond teal-800 plein, mark en teal-50/teal-100/teal-400
+    avec battement blanc — contraste élevé pour l'app de suivi.
+
+direction-c-logo-sombre.png
+    Lockup en version claire (teal-50 / teal-100) sur fond teal-900 — pour supports sombres.
