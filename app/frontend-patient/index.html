@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dixième Nerf — Coach</title>
+<style>
+  :root {
+    --teal-50:#E1F5EE; --teal-100:#9FE1CB; --teal-400:#1D9E75; --teal-600:#0F6E56;
+    --teal-800:#085041; --teal-900:#04342C;
+    --stone:#FAFAF7; --stone-100:#F0EFEA; --ink:#1a1a18; --ink-light:#5a5a52;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans','Segoe UI',sans-serif; background:var(--stone); color:var(--ink); }
+  .wrap { max-width:760px; margin:0 auto; padding:20px; min-height:100vh; display:flex; flex-direction:column; }
+
+  header { display:flex; align-items:center; gap:12px; padding:12px 0 20px; }
+  header img { height:40px; width:auto; }
+  header .t { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--teal-800); }
+  header .s { font-size:12px; color:var(--ink-light); }
+
+  .tabs { display:flex; gap:8px; margin-bottom:16px; }
+  .tab { flex:1; padding:10px; text-align:center; background:var(--stone-100); border:none;
+         border-radius:10px; cursor:pointer; font-size:14px; color:var(--ink-light); font-weight:600; }
+  .tab.active { background:var(--teal-600); color:#fff; }
+
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* Chat */
+  #chat { flex:1; overflow-y:auto; background:#fff; border-radius:16px; padding:16px;
+          min-height:420px; max-height:60vh; display:flex; flex-direction:column; gap:10px; }
+  .msg { max-width:80%; padding:10px 14px; border-radius:14px; line-height:1.5; font-size:14.5px; white-space:pre-wrap; }
+  .msg.coach { align-self:flex-start; background:var(--teal-50); color:var(--teal-900); }
+  .msg.patient { align-self:flex-end; background:var(--teal-600); color:#fff; }
+  .msg.sys { align-self:center; font-size:12px; color:var(--ink-light); font-style:italic; }
+
+  .chat-in { display:flex; gap:8px; margin-top:12px; }
+  .chat-in input { flex:1; padding:12px; border:1px solid var(--stone-100); border-radius:12px; font-size:14.5px; }
+  .chat-in button { padding:12px 20px; background:var(--teal-600); color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight:600; }
+
+  /* Suivi */
+  .sliders { display:flex; flex-direction:column; gap:16px; }
+  .slider-row label { font-size:13.5px; font-weight:600; display:flex; justify-content:space-between; }
+  .slider-row input[type=range] { width:100%; margin-top:6px; accent-color:var(--teal-600); }
+  .btn { display:inline-block; padding:12px 24px; background:var(--teal-600); color:#fff; border:none;
+         border-radius:12px; cursor:pointer; font-weight:600; font-size:14.5px; margin-top:8px; }
+  .val { color:var(--teal-600); font-weight:700; }
+
+  .banner { background:var(--teal-50); border-left:4px solid var(--teal-400); padding:10px 14px;
+            border-radius:8px; font-size:13px; color:var(--teal-800); margin-bottom:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="logo-mark.png" alt="Le Dixième Nerf">
+    <div><div class="t">Le Dixième Nerf</div><div class="s">Coach d'accompagnement</div></div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="sw('chat')">💬 Coach</button>
+    <button class="tab" onclick="sw('suivi')">📊 Suivi du jour</button>
+  </div>
+
+  <div class="banner">💙 Vous n'êtes pas seul(e) entre les séances. Le coach rappelle la méthode d'Ophélie — il ne remplace ni le soin ni le médecin.</div>
+
+  <div id="chat-panel" class="panel active">
+    <div id="chat"></div>
+    <div class="chat-in">
+      <input id="input" placeholder="Posez votre question au coach…" onkeydown="if(event.key==='Enter')envoyer()">
+      <button onclick="envoyer()">Envoyer</button>
+    </div>
+  </div>
+
+  <div id="suivi-panel" class="panel">
+    <div class="sliders">
+      <div class="slider-row"><label>Stress <span class="val" id="v-stress">-</span></label>
+        <input type="range" min="0" max="10" value="5" oninput="upd('stress')"></div>
+      <div class="slider-row"><label>Sommeil <span class="val" id="v-sommeil">-</span></label>
+        <input type="range" min="0" max="10" value="5" oninput="upd('sommeil')"></div>
+      <div class="slider-row"><label>Douleur <span class="val" id="v-douleur">-</span></label>
+        <input type="range" min="0" max="10" value="5" oninput="upd('douleur')"></div>
+      <div class="slider-row"><label>Énergie <span class="val" id="v-energie">-</span></label>
+        <input type="range" min="0" max="10" value="5" oninput="upd('energie')"></div>
+      <div class="slider-row"><label>Exercice fait aujourd'hui ?
+        <input type="checkbox" id="exercice" style="width:auto;margin-top:6px;"></label></div>
+    </div>
+    <button class="btn" onclick="envoyerRessenti()">Enregistrer mon ressenti</button>
+    <div id="ressenti-ok" style="margin-top:10px;color:var(--teal-600);font-size:14px;"></div>
+  </div>
+</div>
+
+<script>
+const API = '';  // même origine
+const PID = localStorage.getItem('nerf_patient_id');
+
+function sw(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active', (i===0&&t==='chat')||(i===1&&t==='suivi')));
+  document.getElementById('chat-panel').classList.toggle('active', t==='chat');
+  document.getElementById('suivi-panel').classList.toggle('active', t==='suivi');
+  if(t==='suivi') updAll();
+}
+
+function addMsg(txt, cls){
+  const c = document.getElementById('chat');
+  const d = document.createElement('div');
+  d.className = 'msg '+cls;
+  d.textContent = txt;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function ensurePatient(cb){
+  // On crée/attache un patient à la kiné par défaut via un pseudo simple
+  const pseudo = localStorage.getItem('nerf_pseudo') || 'Patient';
+  fetch(API+'/api/kine/patients', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({pseudo: pseudo})})
+    .then(r=>r.json()).then(d=>{ localStorage.setItem('nerf_patient_id', d.id); cb(d.id); });
+}
+
+function envoyer(){
+  const inp = document.getElementById('input');
+  const q = inp.value.trim();
+  if(!q) return;
+  inp.value='';
+  addMsg(q, 'patient');
+  addMsg('…', 'sys');
+  const doChat = (pid) => {
+    fetch(API+'/api/patient/chat', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({patient_id:pid, message:q})})
+      .then(r=>r.json()).then(d=>{
+        // retirer le '…'
+        document.querySelectorAll('.msg.sys').forEach(e=>e.remove());
+        addMsg(d.reponse, 'coach');
+      });
+  };
+  if(PID) doChat(PID); else ensurePatient(doChat);
+}
+
+function upd(k){
+  const v = document.querySelector(`input[oninput="upd('${k}')"]`).value;
+  document.getElementById('v-'+k).textContent = v + '/10';
+}
+function updAll(){ ['stress','sommeil','douleur','energie'].forEach(upd); }
+
+function envoyerRessenti(){
+  const val = k => document.querySelector(`input[oninput="upd('${k}')"]`).value;
+  const body = {
+    patient_id: PID || '',
+    stress: +val('stress'), sommeil:+val('sommeil'), douleur:+val('douleur'), energie:+val('energie'),
+    exercice_fait: document.getElementById('exercice').checked ? 1 : 0,
+  };
+  const doIt = (pid) => {
+    body.patient_id = pid;
+    fetch(API+'/api/patient/ressenti', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)}).then(r=>r.json()).then(()=>{
+        document.getElementById('ressenti-ok').textContent = '✅ Ressenti enregistré — Ophélie le verra.';
+      });
+  };
+  if(PID) doIt(PID); else ensurePatient(doIt);
+}
+
+// init : message d'accueil
+document.addEventListener('DOMContentLoaded', ()=>{
+  addMsg("Bonjour, je suis votre coach d'accompagnement. Posez-moi vos questions sur la méthode, la respiration, ou ce que vous ressentez entre les séances. 💙", 'coach');
+});
+</script>
+</body>
+</html>

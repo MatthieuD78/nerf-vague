@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dixième Nerf — Espace kiné</title>
+<style>
+  :root {
+    --teal-50:#E1F5EE; --teal-100:#9FE1CB; --teal-400:#1D9E75; --teal-600:#0F6E56;
+    --teal-800:#085041; --teal-900:#04342C;
+    --stone:#FAFAF7; --stone-100:#F0EFEA; --ink:#1a1a18; --ink-light:#5a5a52;
+    --amber:#F4B400;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans','Segoe UI',sans-serif; background:var(--stone); color:var(--ink); }
+  .wrap { max-width:900px; margin:0 auto; padding:20px; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:12px 0 20px; }
+  header .t { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--teal-800); }
+  header .s { font-size:12px; color:var(--ink-light); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+  .card { background:#fff; border-radius:14px; padding:16px; cursor:pointer; border:1px solid var(--stone-100);
+          transition:0.15s; }
+  .card:hover { box-shadow:0 4px 14px rgba(8,80,65,0.12); }
+  .card h3 { font-size:17px; color:var(--teal-800); }
+  .card .obj { font-size:12.5px; color:var(--ink-light); margin:4px 0 10px; }
+  .chip { display:inline-block; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:600; margin:2px 4px 0 0; }
+  .chip.ok { background:var(--teal-50); color:var(--teal-800); }
+  .chip.warn { background:#FEF3CD; color:#8a6d00; }
+  .stat { font-size:12.5px; color:var(--ink-light); margin-top:8px; line-height:1.6; }
+
+  .detail { display:none; background:#fff; border-radius:16px; padding:20px; margin-top:16px; border:1px solid var(--stone-100); }
+  .detail.show { display:block; }
+  .detail h2 { font-family:'Cormorant Garamond',serif; color:var(--teal-800); margin-bottom:6px; }
+  .back { background:none; border:none; color:var(--teal-600); cursor:pointer; font-size:13px; font-weight:600; margin-bottom:12px; }
+  .sec { margin-top:16px; }
+  .sec h4 { font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:var(--teal-600); margin-bottom:6px; }
+  .alert { background:#FEF3CD; border-left:4px solid var(--amber); padding:8px 12px; border-radius:6px;
+           font-size:13px; margin:4px 0; }
+  .bar-row { display:flex; align-items:center; gap:10px; font-size:13px; margin:5px 0; }
+  .bar { flex:1; height:8px; background:var(--stone-100); border-radius:4px; overflow:hidden; }
+  .bar > div { height:100%; background:var(--teal-400); border-radius:4px; }
+  .q { font-size:13px; color:var(--ink); background:var(--teal-50); padding:8px 12px; border-radius:8px; margin:6px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><div class="t">Le Dixième Nerf</div><div class="s">Espace kiné — vos patients</div></div>
+  </header>
+
+  <div class="cards" id="cards"></div>
+  <div class="detail" id="detail"></div>
+</div>
+
+<script>
+const API = '';
+let patients = [];
+
+async function load(){
+  const r = await fetch(API+'/api/kine/tableau');
+  patients = await r.json();
+  render();
+}
+
+function render(){
+  const c = document.getElementById('cards');
+  c.innerHTML = '';
+  patients.forEach(p => {
+    const al = (p.alertes||[]).map(a=>`<span class="chip warn">⚠ ${a}</span>`).join('');
+    const eng = p.engagement;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = ()=>show(p.id);
+    card.innerHTML = `
+      <h3>${escapeHtml(p.pseudo)}</h3>
+      <div class="obj">${escapeHtml(p.objectif||'')}</div>
+      ${eng ? `<div class="stat">💬 ${eng.messages_patient} messages · 📊 ${eng.saisies_ressenti} ressentis · 🏃 ${eng.exercices_faits} exercices</div>` : '<div class="stat">Aucune activité</div>'}
+      ${al ? `<div style="margin-top:6px">${al}</div>` : ''}
+    `;
+    c.appendChild(card);
+  });
+}
+
+async function show(id){
+  const r = await fetch(API+'/api/kine/synthese/'+id);
+  const s = await r.json();
+  const d = document.getElementById('detail');
+  d.classList.add('show');
+  const tend = s.tendance_7j||{};
+  const bars = [['stress','Stress'],['sommeil','Sommeil'],['douleur','Douleur'],['energie','Énergie']]
+    .map(([k,label])=>{
+      const v = tend[k];
+      return `<div class="bar-row"><span style="width:70px">${label}</span><div class="bar"><div style="width:${v==null?0:v*10}%"></div></div><span>${v==null?'—':v}/10</span></div>`;
+    }).join('');
+  const th = (s.themes_frequents||[]).map(([t,n])=>`<span class="chip ok">${t} (${n})</span>`).join(' ') || '<span style="color:var(--ink-light)">—</span>';
+  const qs = (s.dernieres_questions||[]).map(q=>`<div class="q">« ${escapeHtml(q)} »</div>`).join('') || '<span style="color:var(--ink-light)">Aucune question récente</span>';
+  const al = (s.alertes||[]).map(a=>`<div class="alert">⚠ ${a}</div>`).join('') || '<span style="color:var(--ink-light)">Aucune alerte</span>';
+
+  d.innerHTML = `
+    <button class="back" onclick="back()">← Retour</button>
+    <h2>${escapeHtml(s.patient.pseudo)}</h2>
+    <div style="font-size:13px;color:var(--ink-light)">Objectif : ${escapeHtml(s.patient.objectif||'—')}</div>
+
+    <div class="sec"><h4>Signaux d'alerte</h4>${al}</div>
+    <div class="sec"><h4>Tendance 7 derniers jours</h4>${bars}</div>
+    <div class="sec"><h4>Thèmes fréquents</h4>${th}</div>
+    <div class="sec"><h4>Dernières questions</h4>${qs}</div>
+  `;
+}
+
+function back(){ document.getElementById('detail').classList.remove('show'); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+load();
+</script>
+</body>
+</html>
