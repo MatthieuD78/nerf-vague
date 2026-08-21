@@ -38,7 +38,11 @@ def _ollama_chat(messages, temperature=0.4):
         "model": MODEL,
         "messages": messages,
         "stream": False,
-        "options": {"temperature": temperature},
+        "options": {
+            "temperature": temperature,
+            # Limiter la génération : réponse concise (rapide) — critical pour l'app
+            "num_predict": 500,
+        },
     }
     try:
         r = requests.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=600)

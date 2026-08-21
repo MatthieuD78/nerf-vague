@@ -124,7 +124,7 @@ def chat(inp: ChatIn):
     # enregistrer le message du patient
     db.add_message(inp.patient_id, "patient", inp.message, theme=coach._detecter_theme(inp.message))
     # récupérer le contexte RAG
-    contexte = rag.rechercher(inp.message, n=4)
+    contexte = rag.rechercher(inp.message, n=2)
     historique = db.get_messages(inp.patient_id, limit=20)
     reponse, redirection, theme = coach.repondre(inp.message, contexte, historique)
     # enregistrer la réponse du coach
