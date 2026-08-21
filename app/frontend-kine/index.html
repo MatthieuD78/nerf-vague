@@ -33,6 +33,10 @@
   .detail.show { display:block; }
   .detail h2 { font-family:'Cormorant Garamond',serif; color:var(--teal-800); margin-bottom:6px; }
   .back { background:none; border:none; color:var(--teal-600); cursor:pointer; font-size:13px; font-weight:600; margin-bottom:12px; }
+  .btn-sm { background:var(--teal-600); color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-size:13px; font-weight:600; margin-left:4px; }
+  .addbar { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--stone-100);
+            padding:10px; display:flex; gap:8px; justify-content:center; box-shadow:0 -2px 10px rgba(0,0,0,0.06); }
+  .addbar .btn-sm { margin:0; padding:8px 14px; }
   .sec { margin-top:16px; }
   .sec h4 { font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:var(--teal-600); margin-bottom:6px; }
   .alert { background:#FEF3CD; border-left:4px solid var(--amber); padding:8px 12px; border-radius:6px;
@@ -84,6 +88,7 @@ function render(){
 
 async function show(id){
   const r = await fetch(API+'/api/kine/patients/'+id+'/dossier');
+  currentId = id;
   const d = document.getElementById('detail');
   d.classList.add('show');
   const s = await r.json();
@@ -105,10 +110,11 @@ async function show(id){
     <div class="q"><strong>${escapeHtml(o.objectif)}</strong>
       <span class="chip ${o.statut==='atteint'?'ok':'warn'}">${escapeHtml(o.statut)}</span>
       <span style="color:var(--ink-light)">(${escapeHtml(o.date_obj)})</span></div>`).join('') || '<span style="color:var(--ink-light)">—</span>';
-  // Enregistrements audio
+  // Enregistrements audio (avec lecteur + retranscription + synthèse)
   const enrs = (s.enregistrements||[]).map(e=>`
     <div class="q">
       <strong>🎙️ ${escapeHtml(e.date_audio)}</strong> ${escapeHtml(e.note?('· '+e.note):'')}
+      ${e.fichier?`<div style="margin-top:6px"><audio controls src="${escapeHtml(e.fichier)}" style="width:100%;height:36px"></audio></div>`:''}
       ${e.transcription?`<div style="margin-top:6px;color:var(--ink)"><em>Retranscription :</em> ${escapeHtml(e.transcription)}</div>`:''}
       ${e.synthese?`<div style="margin-top:4px;color:var(--teal-800);background:var(--teal-50);padding:8px;border-radius:8px"><strong>Synthèse :</strong> ${escapeHtml(e.synthese)}</div>`:''}
     </div>`).join('') || '<span style="color:var(--ink-light)">Aucun enregistrement</span>';
@@ -131,10 +137,29 @@ async function show(id){
     <h2>${escapeHtml(p.pseudo)} <span class="chip ${p.type_soin==='HN'?'ok':'warn'}">${escapeHtml(p.type_soin==='HN'?'HN':'Remboursé')}</span></h2>
     <div style="font-size:13px;color:var(--ink-light)">Objectif : ${escapeHtml(p.objectif||'—')}</div>
 
-    <div class="sec"><h4>📋 Bilans</h4>${bilans}</div>
-    <div class="sec"><h4>📸 Photos</h4>${photos}</div>
-    <div class="sec"><h4>🎯 Objectifs de soin</h4>${objectifs}</div>
-    <div class="sec"><h4>🎙️ Enregistrements (retranscrits)</h4>${enrs}</div>
+    <div class="sec">
+      <h4>📋 Bilans <button class="btn-sm" onclick="ajouterBilan()">+</button></h4>
+      ${bilans}
+    </div>
+    <div class="sec">
+      <h4>📸 Photos <button class="btn-sm" onclick="document.getElementById('file-photo').click()">+</button></h4>
+      <input type="file" id="file-photo" accept="image/*" style="display:none" onchange="uploadPhoto(event)">
+      ${photos}
+    </div>
+    <div class="sec">
+      <h4>🎯 Objectifs de soin <button class="btn-sm" onclick="ajouterObjectif()">+</button></h4>
+      ${objectifs}
+    </div>
+    <div class="sec">
+      <h4>🎙️ Enregistrements (retranscrits) <button class="btn-sm" onclick="document.getElementById('file-audio').click()">+</button></h4>
+      <input type="file" id="file-audio" accept="audio/*" style="display:none" onchange="uploadAudio(event)">
+      ${enrs}
+    </div>
+    <div style="height:90px"></div>
+    <div class="addbar"><button class="btn-sm" onclick="ajouterBilan()">+ Bilan</button>
+      <button class="btn-sm" onclick="document.getElementById('file-photo').click()">🖼 Photo</button>
+      <button class="btn-sm" onclick="document.getElementById('file-audio').click()">🎙 Audio</button>
+      <button class="btn-sm" onclick="ajouterObjectif()">🎯 Objectif</button></div>
 
     <div class="sec" style="border-top:2px solid var(--teal-50);padding-top:12px">
       <h4>🤖 Synthèse coach (via l'app patient)</h4>
@@ -149,6 +174,52 @@ async function show(id){
 
 function back(){ document.getElementById('detail').classList.remove('show'); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// --- Ajout dans le dossier patient ---
+let currentId = null;
+function reloadDossier(){ if(currentId) show(currentId); }
+
+function ajouterBilan(){
+  const titre = prompt('Titre du bilan (ex: Bilan d\'étape) :', 'Bilan d\'étape');
+  if(!titre) return;
+  const contenu = prompt('Notes cliniques du bilan :');
+  if(contenu === null) return;
+  fetch(API+'/api/kine/patients/'+currentId+'/bilan', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({titre, contenu, date_bilan:new Date().toISOString().slice(0,10)})})
+    .then(r=>r.json()).then(()=>reloadDossier());
+}
+
+function ajouterObjectif(){
+  const obj = prompt('Objectif de soin :');
+  if(!obj) return;
+  fetch(API+'/api/kine/patients/'+currentId+'/objectif', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({objectif:obj, date_obj:new Date().toISOString().slice(0,10), statut:'en_cours'})})
+    .then(r=>r.json()).then(()=>reloadDossier());
+}
+
+async function uploadPhoto(event){
+  const file = event.target.files[0]; if(!file) return;
+  const fd = new FormData();
+  fd.append('fichier', file);
+  fd.append('legende', prompt('Légende de la photo (optionnel):') || '');
+  await fetch(API+'/api/kine/patients/'+currentId+'/photo', {method:'POST', body:fd});
+  reloadDossier();
+}
+
+async function uploadAudio(event){
+  const file = event.target.files[0]; if(!file) return;
+  const fd = new FormData();
+  fd.append('fichier', file);
+  fd.append('note', prompt('Note (optionnel):') || '');
+  fd.append('date_audio', new Date().toISOString().slice(0,10));
+  document.getElementById('detail').insertAdjacentHTML('beforeend','<div style="color:var(--teal-600);padding:8px">⏳ Transcription en cours…</div>');
+  const r = await fetch(API+'/api/kine/patients/'+currentId+'/enregistrement', {method:'POST', body:fd});
+  const d = await r.json();
+  reloadDossier();
+  alert('Transcription : ' + (d.transcription||'(vide)').slice(0,200));
+}
 
 load();
 </script>

@@ -8,7 +8,7 @@ Routes :
 import os
 from datetime import date
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -18,6 +18,8 @@ import rag
 import coach
 import synthese
 import audio
+import shutil
+import time
 from datetime import date as _date
 
 app = FastAPI(title="Le Dixième Nerf — API coach", version="1.0")
@@ -32,6 +34,12 @@ app.add_middleware(
 
 BASE = os.path.dirname(__file__)
 APP_DIR = os.path.join(BASE, "..")
+# Dossier de stockage local des fichiers (photos + audio) — système fermé
+UPLOAD_DIR = os.path.join(BASE, "stockage")
+for sub in ("photos", "audio"):
+    os.makedirs(os.path.join(UPLOAD_DIR, sub), exist_ok=True)
+# servir les fichiers stockés (accès local à l'app)
+app.mount("/stockage", StaticFiles(directory=UPLOAD_DIR), name="stockage")
 
 
 # ---------- Schémas ----------
@@ -196,10 +204,17 @@ def get_bilans(patient_id: str):
 
 
 @app.post("/api/kine/patients/{patient_id}/photo")
-def add_photo(patient_id: str, inp: PhotoIn):
+async def upload_photo(patient_id: str, fichier: UploadFile = File(...), legende: str = Form("")):
+    """Upload d'une photo : sauvegarde locale + enregistre en DB. Système fermé."""
     _get_patient(patient_id)
-    db.add_photo(patient_id, inp.fichier, inp.legende, inp.date_photo or _today())
-    return {"ok": True}
+    ext = os.path.splitext(fichier.filename or "")[1] or ".jpg"
+    nom_fichier = f"{patient_id}_{int(time.time())}{ext}"
+    dest = os.path.join(UPLOAD_DIR, "photos", nom_fichier)
+    with open(dest, "wb") as f:
+        shutil.copyfileobj(fichier.file, f)
+    url = f"/stockage/photos/{nom_fichier}"
+    db.add_photo(patient_id, url, legende, _today())
+    return {"ok": True, "fichier": url}
 
 
 @app.get("/api/kine/patients/{patient_id}/photos")
@@ -228,14 +243,23 @@ def get_objectifs(patient_id: str):
 
 
 @app.post("/api/kine/patients/{patient_id}/enregistrement")
-def add_enregistrement(patient_id: str, inp: EnregistrementIn):
-    """Ajoute un enregistrement audio + le transcrit en local + le synthétise."""
+async def upload_enregistrement(patient_id: str, fichier: UploadFile = File(...),
+                                note: str = Form(""), date_audio: str = Form("")):
+    """Upload d'un enregistrement audio : sauvegarde locale + transcription locale (whisper)
+    + synthèse pour continuité. Système fermé (rien ne sort)."""
     _get_patient(patient_id)
-    # transcrire en local (whisper) — système fermé
-    transcription = audio.transcrire(inp.fichier, langue="fr")
+    ext = os.path.splitext(fichier.filename or "")[1] or ".m4a"
+    nom_fichier = f"{patient_id}_{int(time.time())}{ext}"
+    dest = os.path.join(UPLOAD_DIR, "audio", nom_fichier)
+    with open(dest, "wb") as f:
+        shutil.copyfileobj(fichier.file, f)
+    # transcription en local (faster-whisper)
+    transcription = audio.transcrire(dest, langue="fr")
     synthese_cont = audio.synthetiser_continuité(transcription) if transcription else ""
-    db.add_enregistrement(patient_id, inp.fichier, transcription, synthese_cont, inp.note, inp.date_audio)
-    return {"ok": True, "transcription": transcription, "synthese": synthese_cont}
+    url = f"/stockage/audio/{nom_fichier}"
+    db.add_enregistrement(patient_id, url, transcription, synthese_cont,
+                          note, date_audio or _today())
+    return {"ok": True, "fichier": url, "transcription": transcription, "synthese": synthese_cont}
 
 
 @app.get("/api/kine/patients/{patient_id}/enregistrements")
