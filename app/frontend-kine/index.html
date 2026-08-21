@@ -73,7 +73,7 @@ function render(){
     card.className = 'card';
     card.onclick = ()=>show(p.id);
     card.innerHTML = `
-      <h3>${escapeHtml(p.pseudo)}</h3>
+      <h3>${escapeHtml(p.pseudo)} <span class="chip ${p.type_soin==='HN'?'ok':'warn'}" style="float:right">${escapeHtml(p.type_soin==='HN'?'HN':'Sécu')}</span></h3>
       <div class="obj">${escapeHtml(p.objectif||'')}</div>
       ${eng ? `<div class="stat">💬 ${eng.messages_patient} messages · 📊 ${eng.saisies_ressenti} ressentis · 🏃 ${eng.exercices_faits} exercices</div>` : '<div class="stat">Aucune activité</div>'}
       ${al ? `<div style="margin-top:6px">${al}</div>` : ''}
@@ -83,29 +83,67 @@ function render(){
 }
 
 async function show(id){
-  const r = await fetch(API+'/api/kine/synthese/'+id);
-  const s = await r.json();
+  const r = await fetch(API+'/api/kine/patients/'+id+'/dossier');
   const d = document.getElementById('detail');
   d.classList.add('show');
-  const tend = s.tendance_7j||{};
+  const s = await r.json();
+  const p = s.patient;
+  const syn = s.synthese_app || {};
+
+  // --- Obtenir les données du dossier ---
+  // Bilans
+  const bilans = (s.bilans||[]).map(b=>`
+    <div class="q"><strong>${escapeHtml(b.titre)}</strong> <span style="color:var(--ink-light)">(${escapeHtml(b.date_bilan)})</span><br>${escapeHtml(b.contenu)}</div>`).join('') || '<span style="color:var(--ink-light)">—</span>';
+  // Photos
+  const photos = (s.photos||[]).map(ph=>`
+    <div style="display:inline-block;margin:6px;text-align:center">
+      <img src="${escapeHtml(ph.fichier)}" style="width:110px;height:auto;border-radius:8px;border:1px solid var(--stone-100)" onerror="this.style.visibility='hidden'">
+      <div style="font-size:11px;color:var(--ink-light)">${escapeHtml(ph.date_photo)} ${escapeHtml(ph.legende)}</div>
+    </div>`).join('') || '<span style="color:var(--ink-light)">Aucune photo</span>';
+  // Objectifs
+  const objectifs = (s.objectifs||[]).map(o=>`
+    <div class="q"><strong>${escapeHtml(o.objectif)}</strong>
+      <span class="chip ${o.statut==='atteint'?'ok':'warn'}">${escapeHtml(o.statut)}</span>
+      <span style="color:var(--ink-light)">(${escapeHtml(o.date_obj)})</span></div>`).join('') || '<span style="color:var(--ink-light)">—</span>';
+  // Enregistrements audio
+  const enrs = (s.enregistrements||[]).map(e=>`
+    <div class="q">
+      <strong>🎙️ ${escapeHtml(e.date_audio)}</strong> ${escapeHtml(e.note?('· '+e.note):'')}
+      ${e.transcription?`<div style="margin-top:6px;color:var(--ink)"><em>Retranscription :</em> ${escapeHtml(e.transcription)}</div>`:''}
+      ${e.synthese?`<div style="margin-top:4px;color:var(--teal-800);background:var(--teal-50);padding:8px;border-radius:8px"><strong>Synthèse :</strong> ${escapeHtml(e.synthese)}</div>`:''}
+    </div>`).join('') || '<span style="color:var(--ink-light)">Aucun enregistrement</span>';
+
+  // --- Synthèse app (le coach capture les expressions du patient) ---
+  const tend = syn.tendance_7j||{};
   const bars = [['stress','Stress'],['sommeil','Sommeil'],['douleur','Douleur'],['energie','Énergie']]
     .map(([k,label])=>{
       const v = tend[k];
       return `<div class="bar-row"><span style="width:70px">${label}</span><div class="bar"><div style="width:${v==null?0:v*10}%"></div></div><span>${v==null?'—':v}/10</span></div>`;
     }).join('');
-  const th = (s.themes_frequents||[]).map(([t,n])=>`<span class="chip ok">${t} (${n})</span>`).join(' ') || '<span style="color:var(--ink-light)">—</span>';
-  const qs = (s.dernieres_questions||[]).map(q=>`<div class="q">« ${escapeHtml(q)} »</div>`).join('') || '<span style="color:var(--ink-light)">Aucune question récente</span>';
-  const al = (s.alertes||[]).map(a=>`<div class="alert">⚠ ${a}</div>`).join('') || '<span style="color:var(--ink-light)">Aucune alerte</span>';
+  const th = (syn.themes_frequents||[]).map(([t,n])=>`<span class="chip ok">${t} (${n})</span>`).join(' ') || '<span style="color:var(--ink-light)">—</span>';
+  const qs = (syn.dernieres_questions||[]).map(q=>`<div class="q">« ${escapeHtml(q)} »</div>`).join('') || '<span style="color:var(--ink-light)">—</span>';
+  const al = (syn.alertes||[]).map(a=>`<div class="alert">⚠ ${a}</div>`).join('') || '<span style="color:var(--ink-light)">Aucune</span>';
+  const engInt = (syn.engagement||{});
+  const eng = `💬 ${engInt.messages_patient||0} msg · 📊 ${engInt.saisies_ressenti||0} ressentis · 🏃 ${engInt.exercices_faits||0} exercices`;
 
   d.innerHTML = `
     <button class="back" onclick="back()">← Retour</button>
-    <h2>${escapeHtml(s.patient.pseudo)}</h2>
-    <div style="font-size:13px;color:var(--ink-light)">Objectif : ${escapeHtml(s.patient.objectif||'—')}</div>
+    <h2>${escapeHtml(p.pseudo)} <span class="chip ${p.type_soin==='HN'?'ok':'warn'}">${escapeHtml(p.type_soin==='HN'?'HN':'Remboursé')}</span></h2>
+    <div style="font-size:13px;color:var(--ink-light)">Objectif : ${escapeHtml(p.objectif||'—')}</div>
 
-    <div class="sec"><h4>Signaux d'alerte</h4>${al}</div>
-    <div class="sec"><h4>Tendance 7 derniers jours</h4>${bars}</div>
-    <div class="sec"><h4>Thèmes fréquents</h4>${th}</div>
-    <div class="sec"><h4>Dernières questions</h4>${qs}</div>
+    <div class="sec"><h4>📋 Bilans</h4>${bilans}</div>
+    <div class="sec"><h4>📸 Photos</h4>${photos}</div>
+    <div class="sec"><h4>🎯 Objectifs de soin</h4>${objectifs}</div>
+    <div class="sec"><h4>🎙️ Enregistrements (retranscrits)</h4>${enrs}</div>
+
+    <div class="sec" style="border-top:2px solid var(--teal-50);padding-top:12px">
+      <h4>🤖 Synthèse coach (via l'app patient)</h4>
+      <div style="font-size:13px;color:var(--ink-light);margin-bottom:8px">${eng}</div>
+      ${al}
+      <div style="margin-top:10px"><strong>Ressentis (7j)</strong></div>${bars}
+      <div style="margin-top:10px"><strong>Thèmes</strong></div>${th}
+      <div style="margin-top:10px"><strong>Dernières questions</strong></div>${qs}
+    </div>
   `;
 }
 

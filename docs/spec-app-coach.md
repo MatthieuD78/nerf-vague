@@ -90,6 +90,27 @@ Le coach ne les interprète jamais en diagnostic — il les transmet brutes et s
 - **Alertes** : un patient qui stagne ou exprime une inquiétude → signalé au kiné
 - **Aide à la séance** : le kiné voit ce que le patient a fait en amont pour adapter le soin
 
+### 🧭 ÉLARGISSEMENT ACTÉ (v2) — dossier patient COMPLET (HN + remboursés)
+
+L'app kiné ne couvre plus seulement les patients de l'app coach : elle devient le
+**dossier patient complet** pour TOUS les patients du kiné (HN ET conventionnels/remboursés),
+pour la **continuité du soin dans le temps**.
+
+Pour CHAQUE patient, l'app kiné regroupe :
+- 📋 **Bilans** (bilan initial, bilans d'étape, notes cliniques)
+- 📸 **Photos** (posture, cicatrices, évolution — datées)
+- 🎯 **Objectifs de soin** (fixés, suivis, mis à jour)
+- 💬 **Ressentis** (du patient : stress, douleur, sommeil, énergie — déclarés)
+- 🎙️ **Enregistrements audio RETRANSCRITS** (séances/notes vocales du kiné) + synthèse
+- 🤖 **Synthèse coach IA** : le coach retranscrit et synthétise les expressions du patient
+  via l'app patient (boucle de capture) → la kiné voit ce que le patient a dit/ressenti
+
+**Lien clé coach→kiné** : le coach IA centralise les expressions du patient (app patient)
+et les **résume en synthèse** que la kiné consulte dans le dossier → continuité du soin.
+
+> **Système fermé (rappel) :** les enregistrements audio et photos sont des données de
+> santé → stockage local, transcription audio en LOCAL (whisper), jamais expédiés au cloud.
+
 > **Valeur** : le kiné gagne du temps, personnalise ses séances, et garde le lien entre les RDV.
 
 ---

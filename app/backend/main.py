@@ -17,6 +17,8 @@ import db
 import rag
 import coach
 import synthese
+import audio
+from datetime import date as _date
 
 app = FastAPI(title="Le Dixième Nerf — API coach", version="1.0")
 
@@ -51,6 +53,35 @@ class RessentiIn(BaseModel):
 class PatientIn(BaseModel):
     pseudo: str
     objectif: str = ""
+    type_soin: str = "HN"
+
+
+class BilanIn(BaseModel):
+    titre: str
+    contenu: str = ""
+    date_bilan: str = ""
+
+
+class PhotoIn(BaseModel):
+    fichier: str
+    legende: str = ""
+    date_photo: str = ""
+
+
+class ObjectifIn(BaseModel):
+    objectif: str
+    date_obj: str = ""
+    statut: str = "en_cours"
+
+
+class ObjectifStatut(BaseModel):
+    statut: str
+
+
+class EnregistrementIn(BaseModel):
+    fichier: str
+    note: str = ""
+    date_audio: str = ""
 
 
 # ---------- Démarrage ----------
@@ -119,7 +150,7 @@ def kine_patients():
 @app.post("/api/kine/patients")
 def kine_create(inp: PatientIn):
     kine_id = db.ensure_kine()
-    pid = db.create_patient(kine_id, inp.pseudo, inp.objectif)
+    pid = db.create_patient(kine_id, inp.pseudo, inp.objectif, inp.type_soin)
     return {"id": pid}
 
 
@@ -142,11 +173,93 @@ def kine_tableau():
             "id": p["id"],
             "pseudo": p["pseudo"],
             "objectif": p["objectif"],
+            "type_soin": p.get("type_soin", "HN"),
             "engagement": s["engagement"] if s else None,
             "alertes": s["alertes"] if s else [],
             "tendance": s["tendance_7j"] if s else None,
         })
     return tableau
+
+
+# ---------- Dossier patient complet (bilans, photos, objectifs, audio) ----------
+@app.post("/api/kine/patients/{patient_id}/bilan")
+def add_bilan(patient_id: str, inp: BilanIn):
+    _get_patient(patient_id)
+    db.add_bilan(patient_id, inp.titre, inp.contenu, inp.date_bilan or _today())
+    return {"ok": True}
+
+
+@app.get("/api/kine/patients/{patient_id}/bilans")
+def get_bilans(patient_id: str):
+    _get_patient(patient_id)
+    return db.get_bilans(patient_id)
+
+
+@app.post("/api/kine/patients/{patient_id}/photo")
+def add_photo(patient_id: str, inp: PhotoIn):
+    _get_patient(patient_id)
+    db.add_photo(patient_id, inp.fichier, inp.legende, inp.date_photo or _today())
+    return {"ok": True}
+
+
+@app.get("/api/kine/patients/{patient_id}/photos")
+def get_photos(patient_id: str):
+    _get_patient(patient_id)
+    return db.get_photos(patient_id)
+
+
+@app.post("/api/kine/patients/{patient_id}/objectif")
+def add_objectif(patient_id: str, inp: ObjectifIn):
+    _get_patient(patient_id)
+    db.add_objectif(patient_id, inp.objectif, inp.date_obj or _today(), inp.statut)
+    return {"ok": True}
+
+
+@app.patch("/api/kine/objectifs/{objectif_id}")
+def set_objectif_statut(objectif_id: str, inp: ObjectifStatut):
+    db.set_objectif_statut(objectif_id, inp.statut)
+    return {"ok": True}
+
+
+@app.get("/api/kine/patients/{patient_id}/objectifs")
+def get_objectifs(patient_id: str):
+    _get_patient(patient_id)
+    return db.get_objectifs(patient_id)
+
+
+@app.post("/api/kine/patients/{patient_id}/enregistrement")
+def add_enregistrement(patient_id: str, inp: EnregistrementIn):
+    """Ajoute un enregistrement audio + le transcrit en local + le synthétise."""
+    _get_patient(patient_id)
+    # transcrire en local (whisper) — système fermé
+    transcription = audio.transcrire(inp.fichier, langue="fr")
+    synthese_cont = audio.synthetiser_continuité(transcription) if transcription else ""
+    db.add_enregistrement(patient_id, inp.fichier, transcription, synthese_cont, inp.note, inp.date_audio)
+    return {"ok": True, "transcription": transcription, "synthese": synthese_cont}
+
+
+@app.get("/api/kine/patients/{patient_id}/enregistrements")
+def get_enregistrements(patient_id: str):
+    _get_patient(patient_id)
+    return db.get_enregistrements(patient_id)
+
+
+@app.get("/api/kine/patients/{patient_id}/dossier")
+def get_dossier(patient_id: str):
+    """Dossier patient complet : infos + bilans + photos + objectifs + enregistrements + synthèse app."""
+    pat = _get_patient(patient_id)
+    return {
+        "patient": pat,
+        "bilans": db.get_bilans(patient_id),
+        "photos": db.get_photos(patient_id),
+        "objectifs": db.get_objectifs(patient_id),
+        "enregistrements": db.get_enregistrements(patient_id),
+        "synthese_app": synthese.synthese_patient(patient_id),
+    }
+
+
+def _today():
+    return _date.today().isoformat()
 
 
 # ---------- Helpers ----------
