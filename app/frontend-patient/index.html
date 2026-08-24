@@ -49,6 +49,19 @@
 
   .banner { background:var(--teal-50); border-left:4px solid var(--teal-400); padding:10px 14px;
             border-radius:8px; font-size:13px; color:var(--teal-800); margin-bottom:14px; }
+
+  /* --- Outils de régulation --- */
+  .chip { display:inline-block; padding:2px 8px; border-radius:14px; font-size:11px; font-weight:600;
+          background:var(--teal-50); color:var(--teal-800); margin-left:4px; }
+  .back { background:none; border:none; color:var(--teal-600); cursor:pointer; font-size:13px; font-weight:600; margin-bottom:10px; }
+  .outil-card { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--stone-100);
+                border-radius:14px; padding:14px; margin-bottom:10px; cursor:pointer; transition:0.15s; }
+  .outil-card:hover { box-shadow:0 4px 14px rgba(8,80,65,0.12); }
+  .outil-ico { font-size:26px; }
+  .outil-info { flex:1; }
+  .outil-titre { font-weight:700; color:var(--teal-800); font-size:15px; }
+  .outil-desc { font-size:12.5px; color:var(--ink-light); margin-top:2px; }
+  .outil-go { color:var(--teal-600); font-weight:700; }
 </style>
 </head>
 <body>
@@ -60,10 +73,11 @@
 
   <div class="tabs">
     <button class="tab active" onclick="sw('chat')">💬 Coach</button>
+    <button class="tab" onclick="sw('respirer')">🧘 Respirer</button>
     <button class="tab" onclick="sw('suivi')">📊 Suivi du jour</button>
   </div>
 
-  <div class="banner">💙 Vous n'êtes pas seul(e) entre les séances. Le coach rappelle la méthode d'Ophélie — il ne remplace ni le soin ni le médecin.</div>
+  <div class="banner">💙 Vous n'êtes pas seul(e) entre les séances. Le coach rappelle la méthode d'Ophélie — il ne remplace ni le soin ni le médecin. Les exercices ci-dessous sont des rappels de ce que vous avez vu en séance.</div>
 
   <div id="chat-panel" class="panel active">
     <div id="chat"></div>
@@ -71,6 +85,13 @@
       <input id="input" placeholder="Posez votre question au coach…" onkeydown="if(event.key==='Enter')envoyer()">
       <button onclick="envoyer()">Envoyer</button>
     </div>
+  </div>
+
+  <div id="respirer-panel" class="panel">
+    <h3 style="font-family:'Cormorant Garamond',serif;color:var(--teal-800);font-size:22px;margin-bottom:6px">Outils de régulation</h3>
+    <p style="font-size:13px;color:var(--ink-light);margin-bottom:12px">Des exercices courts, guidés par la respiration, pour apaiser le nerf vague entre les séances.</p>
+    <div id="outils-list"></div>
+    <div id="outil-active" style="display:none"></div>
   </div>
 
   <div id="suivi-panel" class="panel">
@@ -96,10 +117,16 @@ const API = '';  // même origine
 const PID = localStorage.getItem('nerf_patient_id');
 
 function sw(t){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active', (i===0&&t==='chat')||(i===1&&t==='suivi')));
-  document.getElementById('chat-panel').classList.toggle('active', t==='chat');
-  document.getElementById('suivi-panel').classList.toggle('active', t==='suivi');
+  const is = {chat:'chat-panel', respirer:'respirer-panel', suivi:'suivi-panel'};
+  const panel = is[t]||'chat-panel';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(panel).classList.add('active');
+  // activer le bon onglet
+  const tabIdx = ['chat','respirer','suivi'].indexOf(t);
+  if(tabIdx>=0) document.querySelectorAll('.tab')[tabIdx].classList.add('active');
   if(t==='suivi') updAll();
+  if(t==='respirer') afficherOutils();
 }
 
 function addMsg(txt, cls){
@@ -159,6 +186,91 @@ function envoyerRessenti(){
       });
   };
   if(PID) doIt(PID); else ensurePatient(doIt);
+}
+
+// ===== OUTILS DE RÉGULATION =====
+const OUTILS = [
+  {id:'coherence', icon:'🌫️', titre:"Respiration cohérente", duree:"5 min", desc:"La base. La respiration idéale du nerf vague (~6 cycles/min) pour faire redescendre le calme.",
+    instruct:"Inspirez par le nez en laissant le ventre se gonfler, expirez doucement. Le rythme est lent et régulier.",
+    phases:[{t:"Inspirez", d:5, anim:"expand"},{t:"Expirez", d:5, anim:"shrink"}]},
+  {id:'478', icon:'🌙', titre:"Respiration 4-7-8", duree:"4 cycles", desc:"Pour l'endormissement : expirez plus long que l'inspire (apaisement vagal profond).",
+    instruct:"Inspirez par le nez 4s, retenez 7s, expirez par la bouche 8s.",
+    phases:[{t:"Inspire", d:4, anim:"expand"},{t:"Retenez", d:7, anim:"hold"},{t:"Expirez", d:8, anim:"shrink"}]},
+  { id:'carre', icon:'⬛', titre:"Respiration carrée", duree:"4 cycles", desc:"Pour le stress aigu : structure cadrée qui réengage le corps.",
+    phases:[{t:"Inspire", d:4, anim:"expand"},{t:"Retenez", d:4, anim:"hold"},{t:"Expirez", d:4, anim:"shrink"},{t:"Pause", d:4, anim:"hold"}]},
+  { id:'scan', icon:'🫧', titre:"Scan corporel", duree:"3 min", desc:"Parcourez vos sensations de la tête aux pieds, sans jugement.",
+    phases:[{t:"Tête", d:15, anim:"hold"},{t:"Épaules", d:15, anim:"hold"},{t:"Poitrine", d:15, anim:"hold"},{t:"Ventre", d:15, anim:"hold"},{t:"Jambes et pieds", d:15, anim:"hold"}]},
+  { id:'conscience', icon:'🌿', titre:"Pleine conscience", duree:"2 min", desc:"Restez sur votre souffle et les bruits autour, sans jugement.",
+    phases:[{t:"Observez", d:60, anim:"hold"}]},
+  { id:'hum', icon:'🔔', titre:"Hum - vibration vagale", duree:"1 min", desc:"En expirant, faites hum. La vibration adoucit et stimule le nerf vague.",
+    phases:[{t:"Inspire", d:4, anim:"expand"},{t:"Hum…", d:6, anim:"shrink"}]},
+];
+
+let timerOutil=null;
+function afficherOutils(){
+  document.getElementById('outil-active').style.display='none';
+  const list=document.getElementById('outils-list');
+  if(!list) return;
+  list.style.display='block';
+  list.innerHTML = OUTILS.map(o=>`
+    <div class="outil-card" onclick="lancerOutil('${o.id}')">
+      <div class="outil-ico">${o.icon}</div>
+      <div class="outil-info">
+        <div class="outil-titre">${o.titre}</div>
+        <div class="outil-desc">${o.desc} <span class="chip">${o.duree}</span></div>
+      </div>
+      <div class="outil-go">▶</div>
+    </div>`).join('');
+}
+
+function lancerOutil(id){
+  const o = OUTILS.find(x=>x.id===id); if(!o) return;
+  document.getElementById('outils-list').style.display='none';
+  const zone = document.getElementById('outil-active');
+  zone.style.display='block';
+  zone.innerHTML = `
+    <button class="back" onclick="afficherOutils()">← Retour aux exercices</button>
+    <h3 style="font-family:'Cormorant Garamond',serif;color:var(--teal-800);font-size:20px">${o.icon} ${o.titre} <span class="chip">${o.duree}</span></h3>
+    <p style="font-size:13px;color:var(--ink-light);margin-bottom:8px">${o.desc}</p>
+    <p style="font-size:13px;color:var(--teal-600);margin-bottom:10px">${o.instruct||''}</p>
+    <div id="breath" style="width:180px;height:180px;margin:10px auto;position:relative">
+      <div id="breath-circle" style="width:60px;height:60px;border-radius:50%;background:var(--teal-400);margin:60px auto;opacity:0.85;transform:scale(1)"></div>
+    </div>
+    <div id="breath-label" style="text-align:center;font-size:16px;font-weight:600;color:var(--teal-800);min-height:24px;margin-bottom:10px"></div>
+    <button class="btn" onclick="goOutil('${o.id}')" id="goBtn">Démarrer</button>
+    <div id="outil-ok" style="margin-top:8px;color:var(--teal-600);font-size:13px;text-align:center"></div>
+  `;
+}
+
+function startBreath(o, phaseIndex){
+  const p = o.phases[phaseIndex % o.phases.length];
+  document.getElementById('breath-label').textContent = p.t;
+  const circ=document.getElementById('breath-circle');
+  circ.style.transition='all '+p.d+'s ease-in-out';
+  const target = p.anim==='expand' ? 2.3 : p.anim==='shrink' ? 0.65 : 1.0;
+  circ.style.transform='scale('+target+')';
+}
+
+function goOutil(id){
+  const o=OUTILS.find(x=>x.id===id);
+  const btn=document.getElementById('goBtn'); if(btn) btn.disabled=true;
+  const cycles = o.id==='coherence'?3 : o.id==='scan'?1 : 2;
+  const totalPhases = o.phases.length * cycles;
+  let phase=0;
+  let timer = setInterval(()=>{
+    startBreath(o,phase); phase++;
+    if(phase>=totalPhases){ clearInterval(timer); finOutil(id); }
+  }, 1000 * (o.phases[phase % o.phases.length].d));
+  startBreath(o,phase); phase++;
+}
+function finOutil(id){
+  clearTimeout(timerOutil);
+  document.getElementById('breath-label').textContent='✅ Exercice terminé';
+  // enregistrer exercice fait
+  const doEx = (pid)=>fetch(API+'/api/patient/ressenti',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({patient_id:pid,stress:null,sommeil:null,douleur:null,energie:null,exercice_fait:1,commentaire:'exercice '+id})});
+  if(PID) doEx(PID); else ensurePatient(doEx);
+  document.getElementById('outil-ok').textContent = '✅ Bien fait — Ophélie le verra dans votre suivi.';
 }
 
 // init : message d'accueil
